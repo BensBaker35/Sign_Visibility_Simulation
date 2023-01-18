@@ -51,7 +51,7 @@ namespace RIT.RochesterLOS.Mapping
 
             var arcGISMap = new Esri.GameEngine.Map.ArcGISMap(arcGISMapComponent.MapType);
             
-            arcGISMap.Basemap = new ArcGISBasemap(ArcGISBasemapStyle.ArcGISImagery, MAIN_API_KEY);
+            arcGISMap.Basemap = new ArcGISBasemap(ArcGISBasemapStyle.ArcGISImageryStandard, MAIN_API_KEY);
 
             arcGISMap.Elevation = new Esri.GameEngine.Map.ArcGISMapElevation(new Esri.GameEngine.Elevation.ArcGISImageElevationSource(
                 "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer", "Elevation", MAIN_API_KEY));
