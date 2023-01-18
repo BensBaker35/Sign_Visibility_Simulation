@@ -51,11 +51,13 @@ namespace RIT.RochesterLOS.Mapping
 
             var arcGISMap = new Esri.GameEngine.Map.ArcGISMap(arcGISMapComponent.MapType);
             
-            arcGISMap.Basemap = new ArcGISBasemap(ArcGISBasemapStyle.ArcGISImageryStandard, MAIN_API_KEY);
+            arcGISMap.Basemap = new ArcGISBasemap(ArcGISBasemapStyle.ArcGISImagery, MAIN_API_KEY);
 
-            arcGISMap.Elevation = new Esri.GameEngine.Map.ArcGISMapElevation(new Esri.GameEngine.Elevation.ArcGISImageElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer", "Elevation", ""));
+            arcGISMap.Elevation = new Esri.GameEngine.Map.ArcGISMapElevation(new Esri.GameEngine.Elevation.ArcGISImageElevationSource(
+                "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer", "Elevation", MAIN_API_KEY));
 
-            var buildingLayer = new ArcGIS3DObjectSceneLayer("https://tiles.arcgis.com/tiles/RQcpPaCpMAXzUI5g/arcgis/rest/services/InnerLoopParcel3D/SceneServer", MAIN_API_KEY);
+            var buildingLayer = new ArcGIS3DObjectSceneLayer(
+                "https://tiles.arcgis.com/tiles/RQcpPaCpMAXzUI5g/arcgis/rest/services/InnerLoopParcel3D/SceneServer", MAIN_API_KEY);
             arcGISMap.Layers.Add(buildingLayer);
             
 
