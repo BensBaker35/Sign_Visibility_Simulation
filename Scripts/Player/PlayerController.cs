@@ -90,10 +90,10 @@ namespace RIT.RochesterLOS.Player
                     );
                 }
             }//Todo change to recognize if an object is above, move player up
-            // else if(Physics.Raycast(transform.position, Vector3.down, out hit, maxGroundCheckDistance))
-            // {
-            //     transform.position = new Vector3(transform.position.x, hit.point.y + 2, transform.position.z);
-            // }
+            else if(Physics.Raycast(transform.position, Vector3.up, out hit, maxGroundCheckDistance))
+            {
+                transform.position = new Vector3(transform.position.x, hit.point.y + minGroundDistance, transform.position.z);
+            }
 
 
             //characterController.Move(Vector3.up * yVelocity * gravityApprox * Time.deltaTime)
@@ -109,6 +109,7 @@ namespace RIT.RochesterLOS.Player
 
         private IEnumerator WaitforMapLoad()
         {
+            //TODO Look into checking ArcGIS Map View State
             Debug.Log("Start Wait");
             yield return new WaitForSecondsRealtime(mapLoadWaitTime);
             mapReady = true;
