@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 1445.7559, g: 1517.0176, b: 2206.707, a: 1}
+  m_IndirectSpecularColor: {r: 1444.0078, g: 1512.584, b: 2193.2656, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -481,6 +481,7 @@ GameObject:
   m_Component:
   - component: {fileID: 534646889}
   - component: {fileID: 534646888}
+  - component: {fileID: 534646890}
   m_Layer: 0
   m_Name: MapControl
   m_TagString: Untagged
@@ -515,6 +516,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &534646890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 534646887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 207803b85642d7844aaf4e1dc2a92b07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1542407704 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4592914754718972501, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
@@ -717,6 +730,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 482318024}
     m_Modifications:
+    - target: {fileID: 4592914754718972498, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
+        type: 3}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4592914754718972499, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
+        type: 3}
+      propertyPath: moveSpeed
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 4592914754718972501, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
         type: 3}
       propertyPath: m_RootOrder
@@ -730,7 +753,7 @@ PrefabInstance:
     - target: {fileID: 4592914754718972501, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -12
+      value: -11.638
       objectReference: {fileID: 0}
     - target: {fileID: 4592914754718972501, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
         type: 3}
@@ -785,7 +808,7 @@ PrefabInstance:
     - target: {fileID: 4592914754907978590, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.46000004
+      value: 0.09799957
       objectReference: {fileID: 0}
     - target: {fileID: 4592914754907978590, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
         type: 3}
@@ -878,13 +901,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7203749607987196924, guid: 65eecd6aa0be7874490236a655b39c24,
         type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7203749607987196924, guid: 65eecd6aa0be7874490236a655b39c24,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0f99772b16105de4183ad0f185c03777, type: 2}
+    - target: {fileID: 7203749607987196924, guid: 65eecd6aa0be7874490236a655b39c24,
+        type: 3}
       propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7203749607987196924, guid: 65eecd6aa0be7874490236a655b39c24,
         type: 3}
       propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
-      value: 0
+      value: 0.05126953
       objectReference: {fileID: 0}
     - target: {fileID: 7203749607987196927, guid: 65eecd6aa0be7874490236a655b39c24,
         type: 3}

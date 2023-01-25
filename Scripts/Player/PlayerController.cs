@@ -4,6 +4,7 @@ using Esri.ArcGISMapsSDK.Components;
 using Esri.ArcGISMapsSDK.Utils.GeoCoord;
 using Esri.GameEngine.Geometry;
 using Esri.HPFramework;
+using RIT.RochesterLOS.Events;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace RIT.RochesterLOS.Player
     {
         [SerializeField] private float lookSpeed = 150f;
         [SerializeField] private float moveSpeed = 100f;
-        [SerializeField] private float maxGroundDistance = 5f; //Distance from ground
+        [SerializeField] private float maxGroundDistance = 0.4f; //Distance from ground
         [SerializeField] private float minGroundDistance = 3f;
         [SerializeField] private float mapLoadWaitTime = 15f;
     
@@ -25,6 +26,9 @@ namespace RIT.RochesterLOS.Player
         private float xRotation = 0f;
         private float maxGroundCheckDistance = 20f;
         private bool mapReady = false;
+        private bool isGrounded = false;
+        private Vector3 velocity;
+        private float gravity = -9.81f;
         
         // Start is called before the first frame update
         void Start()
@@ -57,7 +61,12 @@ namespace RIT.RochesterLOS.Player
             childCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
             transform.Rotate(Vector3.up * mousX);
 
+            isGrounded = Physics.CheckSphere(transform.position, maxGroundDistance);
 
+            if(isGrounded && velocity.y < 0)
+            {
+                velocity.y = -2f;
+            }
 
             var x = Input.GetAxis("Horizontal");
             var z = Input.GetAxis("Vertical");
@@ -67,33 +76,37 @@ namespace RIT.RochesterLOS.Player
 
             characterController.Move(moveVec * moveSpeed * Time.deltaTime);
 
+            velocity.y += gravity * Time.deltaTime;
+
+            characterController.Move(velocity * Time.deltaTime);
+
             
-            RaycastHit hit;
-            if(Physics.Raycast(transform.position, Vector3.down, out hit, maxGroundCheckDistance))
-            {
-                if(hit.distance > maxGroundDistance)
-                {
+            // RaycastHit hit;
+            // if(Physics.Raycast(transform.position, Vector3.down, out hit, maxGroundCheckDistance))
+            // {
+            //     if(hit.distance > maxGroundDistance)
+            //     {
                     
                     
-                    transform.position = new Vector3(
-                        transform.position.x, 
-                        transform.position.y - (hit.distance - maxGroundDistance), 
-                        transform.position.z
-                    );
-                }
-                else if(hit.distance < minGroundDistance)
-                {
-                    transform.position = new Vector3(
-                        transform.position.x, 
-                        transform.position.y + minGroundDistance, 
-                        transform.position.z
-                    );
-                }
-            }//Todo change to recognize if an object is above, move player up
-            else if(Physics.Raycast(transform.position, Vector3.up, out hit, maxGroundCheckDistance))
-            {
-                transform.position = new Vector3(transform.position.x, hit.point.y + minGroundDistance, transform.position.z);
-            }
+            //         transform.position = new Vector3(
+            //             transform.position.x, 
+            //             transform.position.y - (hit.distance - maxGroundDistance), 
+            //             transform.position.z
+            //         );
+            //     }
+            //     else if(hit.distance < minGroundDistance)
+            //     {
+            //         transform.position = new Vector3(
+            //             transform.position.x, 
+            //             transform.position.y + minGroundDistance, 
+            //             transform.position.z
+            //         );
+            //     }
+            // }//Todo change to recognize if an object is above, move player up
+            // else if(Physics.Raycast(transform.position, Vector3.up, out hit, maxGroundCheckDistance))
+            // {
+            //     transform.position = new Vector3(transform.position.x, hit.point.y + minGroundDistance, transform.position.z);
+            // }
 
 
             //characterController.Move(Vector3.up * yVelocity * gravityApprox * Time.deltaTime)
@@ -111,6 +124,7 @@ namespace RIT.RochesterLOS.Player
         {
             //TODO Look into checking ArcGIS Map View State
             Debug.Log("Start Wait");
+            //yield return new WaitUntil(() => ESRIEventManager.World_Imagery_Ready);
             yield return new WaitForSecondsRealtime(mapLoadWaitTime);
             mapReady = true;
             Debug.Log("End Wait");
@@ -131,6 +145,11 @@ namespace RIT.RochesterLOS.Player
             Debug.Log($"Degrees: {X}, {Y}");
 
             return new ArcGISRotation(Y, 90, 0);
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.DrawSphere(transform.position, 1f);
         }
 
     }
