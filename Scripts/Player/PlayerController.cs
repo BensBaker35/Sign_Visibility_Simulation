@@ -14,8 +14,8 @@ namespace RIT.RochesterLOS.Player
     {
         [SerializeField] private float lookSpeed = 150f;
         [SerializeField] private float moveSpeed = 100f;
-        [SerializeField] private float maxGroundDistance = 0.4f; //Distance from ground
-        [SerializeField] private float minGroundDistance = 3f;
+        [SerializeField] private float groundingDistance = 0.4f; //Distance from ground
+        [SerializeField] private float initialLoadDistanceCheck = 3f;
         [SerializeField] private float mapLoadWaitTime = 15f;
     
         private Camera childCamera; //Main Camera
@@ -61,7 +61,7 @@ namespace RIT.RochesterLOS.Player
             childCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
             transform.Rotate(Vector3.up * mousX);
 
-            isGrounded = Physics.CheckSphere(transform.position, maxGroundDistance);
+            isGrounded = Physics.CheckSphere(transform.position, groundingDistance);
 
             if(isGrounded && velocity.y < 0)
             {
@@ -79,55 +79,21 @@ namespace RIT.RochesterLOS.Player
             velocity.y += gravity * Time.deltaTime;
 
             characterController.Move(velocity * Time.deltaTime);
-
-            
-            // RaycastHit hit;
-            // if(Physics.Raycast(transform.position, Vector3.down, out hit, maxGroundCheckDistance))
-            // {
-            //     if(hit.distance > maxGroundDistance)
-            //     {
-                    
-                    
-            //         transform.position = new Vector3(
-            //             transform.position.x, 
-            //             transform.position.y - (hit.distance - maxGroundDistance), 
-            //             transform.position.z
-            //         );
-            //     }
-            //     else if(hit.distance < minGroundDistance)
-            //     {
-            //         transform.position = new Vector3(
-            //             transform.position.x, 
-            //             transform.position.y + minGroundDistance, 
-            //             transform.position.z
-            //         );
-            //     }
-            // }//Todo change to recognize if an object is above, move player up
-            // else if(Physics.Raycast(transform.position, Vector3.up, out hit, maxGroundCheckDistance))
-            // {
-            //     transform.position = new Vector3(transform.position.x, hit.point.y + minGroundDistance, transform.position.z);
-            // }
-
-
-            //characterController.Move(Vector3.up * yVelocity * gravityApprox * Time.deltaTime)
-
-            //arcGISMapComponent.View.WorldToGeographic()
-            // var worldPosition = math.inverse(arcGISMapComponent.WorldMatrix).HomogeneousTransformPoint(Input.mousePosition.ToDouble3());
-            // var geoPosition = arcGISMapComponent.View.WorldToGeographic(worldPosition);
-            //var correctedPos =  GeoUtils.ProjectToSpatialReference(geoPosition, arcGISMapComponent.View.SpatialReference);
-            //Debug.Log($"Positon? {correctedPos.X}, {correctedPos.Y}, {correctedPos.Z}");
-            // var b = CalcualteBearing(loc.Position, geoPosition);
-            // loc.Rotation = b;
         }
 
         private IEnumerator WaitforMapLoad()
         {
-            //TODO Look into checking ArcGIS Map View State
-            Debug.Log("Start Wait");
-            //yield return new WaitUntil(() => ESRIEventManager.World_Imagery_Ready);
-            yield return new WaitForSecondsRealtime(mapLoadWaitTime);
+            Debug.Log("Waiting For Proper Collider Initialization");
+            yield return new WaitUntil(() => 
+            {
+                RaycastHit hit;
+                var hitCollider = Physics.Raycast(transform.position, Vector3.down, out hit, initialLoadDistanceCheck);
+
+                return hitCollider;
+            });
+            
             mapReady = true;
-            Debug.Log("End Wait");
+            Debug.Log("Colliders Found!");
         }
 
         private ArcGISRotation CalcualteBearing(ArcGISPoint p1, ArcGISPoint p2)
@@ -149,7 +115,7 @@ namespace RIT.RochesterLOS.Player
 
         private void OnDrawGizmos()
         {
-            Gizmos.DrawSphere(transform.position, 1f);
+            Gizmos.DrawLine(transform.position, transform.position + (Vector3.down * initialLoadDistanceCheck));
         }
 
     }

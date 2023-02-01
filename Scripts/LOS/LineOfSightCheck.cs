@@ -29,7 +29,7 @@ namespace RIT.RochesterLOS.LOS
             if (Physics.Raycast(transform.position, direction, out hit))
             {
                 var hitPlayer = hit.transform.Equals(playerTarget);
-                Debug.Log(hitPlayer ? "Has LOS" : "Lost LOS");
+                //Debug.Log(hitPlayer ? "Has LOS" : "Lost LOS");
                 losRenderer.endColor = losRenderer.startColor = hitPlayer ? Color.green : Color.red;
                 
                 losRenderer.material.SetFloat("_Has_LOS", hitPlayer ? 1f : 0f);//_Has_LOS is defined by shader

@@ -39,9 +39,21 @@ namespace RIT.RochesterLOS.Signage
                 var signLocation = signObject.GetComponent<ArcGISLocationComponent>();
 
                 signLocation.enabled = true;
-                signLocation.Position = new Esri.GameEngine.Geometry.ArcGISPoint(sign.Long, sign.Lat, sign.Elev, ArcGISSpatialReference.WGS84());
+                signLocation.Position = new Esri.GameEngine.Geometry.ArcGISPoint(sign.Lon, sign.Lat, sign.Elev, ArcGISSpatialReference.WGS84());
 
                 signObject.name = sign.Name;
+
+                var testObj = Instantiate(signTypeMap[SignType.BASE], transform);
+                testObj.AddComponent<Esri.HPFramework.HPTransform>();
+                var testLocation = testObj.GetComponent<ArcGISLocationComponent>();
+                testLocation.enabled = true;
+                var temp = Analysis.AnalysisUtil.MoveCoordinate(signLocation.Position, 20f, Analysis.AnalysisUtil.MoveDirection.NS);
+                testLocation.Position = temp;
+                testObj.name = "Test: 20 M Projected";
+                Debug.Log($"XDiff: {signLocation.Position.X - temp.X}, YDiff: {signLocation.Position.Y - temp.Y}");
+
+                Analysis.AnalysisUtil.ConvertCoordinates(signLocation.Position);
+                
             }
         }
 
@@ -66,7 +78,7 @@ namespace RIT.RochesterLOS.Signage
                     signs[i - 1] = new SignData()
                     {
                         Lat = float.Parse(values[0]),
-                        Long = float.Parse(values[1]),
+                        Lon = float.Parse(values[1]),
                         Elev = float.Parse(values[2]),
                         Type = !string.IsNullOrEmpty(values[3]) ? (SignType)Enum.Parse(typeof(SignType), values[3], true) : SignType.BASE,
                         Name = !string.IsNullOrEmpty(values[4]) ? values[4] : "Sign " + values[3],
@@ -98,7 +110,7 @@ namespace RIT.RochesterLOS.Signage
     internal struct SignData
     {
         public float Lat { get; set; }
-        public float Long { get; set; }
+        public float Lon { get; set; }
         public float Elev { get; set; }
         public string? Name { get; set; }
         public SignType Type { get; set; }

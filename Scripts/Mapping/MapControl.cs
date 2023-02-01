@@ -9,6 +9,8 @@ using Esri.GameEngine.Layers;
 using Esri.Unity;
 using UnityEngine;
 using Esri.GameEngine;
+using Esri.GameEngine.Layers.Base;
+using RIT.RochesterLOS.Events;
 
 namespace RIT.RochesterLOS.Mapping
 {
@@ -39,7 +41,7 @@ namespace RIT.RochesterLOS.Mapping
         // Update is called once per frame
         void Update()
         {
-
+         
         }
 
         /// <summary>
@@ -52,16 +54,19 @@ namespace RIT.RochesterLOS.Mapping
             var arcGISMap = new Esri.GameEngine.Map.ArcGISMap(arcGISMapComponent.MapType);
             
             arcGISMap.Basemap = new ArcGISBasemap(ArcGISBasemapStyle.ArcGISImageryStandard, MAIN_API_KEY);
+            
 
             arcGISMap.Elevation = new Esri.GameEngine.Map.ArcGISMapElevation(new Esri.GameEngine.Elevation.ArcGISImageElevationSource(
                 "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer", "Elevation", MAIN_API_KEY));
 
             var buildingLayer = new ArcGIS3DObjectSceneLayer(
                 "https://tiles.arcgis.com/tiles/RQcpPaCpMAXzUI5g/arcgis/rest/services/InnerLoopParcel3D/SceneServer", MAIN_API_KEY);
-            arcGISMap.Layers.Add(buildingLayer);
-            
+                
+            arcGISMap.Layers.Add(buildingLayer);    
 
             arcGISMapComponent.View.Map = arcGISMap;
+            
+            arcGISMap.Basemap.DoneLoading += (_) => {Debug.Log("Basemap Done"); ESRIEventManager.World_Imagery_Ready = true;};
         }
 
         /// <summary>
@@ -80,6 +85,9 @@ namespace RIT.RochesterLOS.Mapping
             arcGISMapComponent.OriginPosition = ROCHESTER_COORDINATES;
             arcGISMapComponent.MapType = Esri.GameEngine.Map.ArcGISMapType.Local;
             arcGISMapComponent.MapTypeChanged += new ArcGISMapComponent.MapTypeChangedEventHandler(CreateArcGISMap);
+            
+            arcGISMapComponent.MeshCollidersEnabled = true;
+            
         }
 
         /// <summary>
@@ -100,7 +108,7 @@ namespace RIT.RochesterLOS.Mapping
                 cameraGameObject.transform.SetParent(arcGISMapComponent.transform, false);
                 cameraComponent = cameraGameObject.AddComponent<ArcGISCameraComponent>();
                 //cameraGameObject.AddComponent<ArcGISCameraControllerComponent>();
-                cameraGameObject.AddComponent<ArcGISRebaseComponent>();
+                //cameraGameObject.AddComponent<ArcGISRebaseComponent>();
             }
 
             var cameraLocationComponent = cameraComponent.GetComponent<ArcGISLocationComponent>();
@@ -112,6 +120,17 @@ namespace RIT.RochesterLOS.Mapping
                 cameraLocationComponent.Rotation = new ArcGISRotation(0, 90, 0);
             }
         }
+
+
+
+        // private DependantLayer FromViewState(ArcGISLayer layer)
+        // {
+        //     var state = arcGISMapComponent.View.GetViewState(layer);
+
+        //     //layer.
+        // }
+
+
     }
 
 }
