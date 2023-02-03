@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System;
 using Esri.ArcGISMapsSDK.Components;
 using Esri.GameEngine.Geometry;
+using RIT.RochesterLOS.LOS;
 
 namespace RIT.RochesterLOS.Signage
 {
@@ -40,20 +41,8 @@ namespace RIT.RochesterLOS.Signage
 
                 signLocation.enabled = true;
                 signLocation.Position = new Esri.GameEngine.Geometry.ArcGISPoint(sign.Lon, sign.Lat, sign.Elev, ArcGISSpatialReference.WGS84());
-
-                signObject.name = sign.Name;
-
-                var testObj = Instantiate(signTypeMap[SignType.BASE], transform);
-                testObj.AddComponent<Esri.HPFramework.HPTransform>();
-                var testLocation = testObj.GetComponent<ArcGISLocationComponent>();
-                testLocation.enabled = true;
-                var temp = Analysis.AnalysisUtil.MoveCoordinate(signLocation.Position, 20f, Analysis.AnalysisUtil.MoveDirection.NS);
-                testLocation.Position = temp;
-                testObj.name = "Test: 20 M Projected";
-                Debug.Log($"XDiff: {signLocation.Position.X - temp.X}, YDiff: {signLocation.Position.Y - temp.Y}");
-
-                Analysis.AnalysisUtil.ConvertCoordinates(signLocation.Position);
                 
+                signObject.name = sign.Name;
             }
         }
 
@@ -72,7 +61,7 @@ namespace RIT.RochesterLOS.Signage
             {
                 var line = data[i];
                 var values = line.Split(',');
-                Debug.Log($"{values[0]}, {values[1]}, {values[2]}, {values[3]}, {values[4]}");
+
                 try
                 {
                     signs[i - 1] = new SignData()

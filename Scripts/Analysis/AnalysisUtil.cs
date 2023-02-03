@@ -86,6 +86,7 @@ namespace RIT.RochesterLOS.Analysis
         private double[] _moveCoordinates(double[] origin, double amount, MoveDirection direction)
         {
             var inMeters = _convertCoordinateTo(origin, ConvertTo.NY_STATE_West);
+            var inMetersTest = inMeters.Clone();
             if(direction == MoveDirection.EW)
             {
                 inMeters[0] += amount;
@@ -94,7 +95,26 @@ namespace RIT.RochesterLOS.Analysis
             {
                 inMeters[1] += amount;
             }
+
             return _convertCoordinateTo(inMeters, ConvertTo.WGS84);
+        }
+
+        private double _calcDistance(double[] origin, double[] measureTo)
+        {
+            _toRadians(ref origin);
+            _toRadians(ref measureTo);
+
+            var earthRad = 6356752.3142;
+
+            return Math.Acos(Math.Sin(origin[1]) * Math.Sin(measureTo[1]) + Math.Cos(measureTo[1]) * Math.Cos(measureTo[1]) * Math.Cos(measureTo[0] - measureTo[0])) * earthRad;
+        }
+
+        private void _toRadians(ref double[] toConvert)
+        {
+            for(var i = 0; i < toConvert.Length; i++)
+            {
+                toConvert[i] *= Math.PI * 180;
+            }
         }
 
         public static ArcGISPoint MoveCoordinate(ArcGISPoint point, float amount, MoveDirection dir)
@@ -102,7 +122,24 @@ namespace RIT.RochesterLOS.Analysis
             var pointAsDouble = new Double[]{point.X, point.Y};
             var finalPoint = Instance._moveCoordinates(pointAsDouble, amount, dir);
             return new ArcGISPoint(finalPoint[0], finalPoint[1], point.Z, ArcGISSpatialReference.WGS84());
+            // var builder = (ArcGISPolylineBuilder) ArcGISGeometryBuilder.Create(ArcGISGeometryType.Polyline, ArcGISSpatialReference.WGS84());
+            // var nextP = Instance._moveCoordinates(new[] {point.X, point.Y}, 1, dir);
+            // builder.AddPoint(point.X, point.Y, point.Z);
+            // builder.AddPoint(nextP[0], nextP[1], point.Z);
 
+            //var lp = (ArcGISPolyline) ArcGISGeometryEngine.Offset(builder.ToGeometry(), amount, ArcGISGeometryOffsetType.Bevelled, 0, 0);
+            //return  lp.Parts.GetPart(0).EndPoint;
+            //var amount_d = ((0.0000001d/0.111d) * (double)amount);
+            //return (ArcGISPoint) ArcGISGeometryEngine.Offset(point, amount, ArcGISGeometryOffsetType.Bevelled, 0, 0);
+
+        }
+
+        public static double DistanceBetweenPoints(ArcGISPoint origin, ArcGISPoint measureTo)
+        {
+            
+            return ArcGISGeometryEngine.Distance(origin, measureTo);
+            
+            //return Instance._calcDistance(new[] {origin.X, origin.Y}, new[] {measureTo.X, measureTo.Y});
         }
 
 

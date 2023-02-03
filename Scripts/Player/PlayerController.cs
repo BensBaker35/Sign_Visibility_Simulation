@@ -12,15 +12,15 @@ namespace RIT.RochesterLOS.Player
 {
     public class PlayerController : MonoBehaviour
     {
+        private static readonly ArcGISPoint PLAYER_SPAWN = new ArcGISPoint(-77.60638, 43.15719, 175, ArcGISSpatialReference.WGS84());
         [SerializeField] private float lookSpeed = 150f;
         [SerializeField] private float moveSpeed = 100f;
         [SerializeField] private float groundingDistance = 0.4f; //Distance from ground
         [SerializeField] private float initialLoadDistanceCheck = 3f;
         [SerializeField] private float mapLoadWaitTime = 15f;
+        //[SerializeField] private GameObject cameraObject;
     
         private Camera childCamera; //Main Camera
-        private HPTransform hpTransform;
-        private ArcGISLocationComponent loc;
         private ArcGISMapComponent arcGISMapComponent;
         private CharacterController characterController;
         private float xRotation = 0f;
@@ -36,8 +36,6 @@ namespace RIT.RochesterLOS.Player
             arcGISMapComponent = FindObjectOfType<ArcGISMapComponent>();
             childCamera = GetComponentInChildren<Camera>();
             
-            hpTransform = GetComponent<HPTransform>();
-            loc = GetComponent<ArcGISLocationComponent>();
             characterController = GetComponent<CharacterController>();
             
 
@@ -79,8 +77,11 @@ namespace RIT.RochesterLOS.Player
             velocity.y += gravity * Time.deltaTime;
 
             characterController.Move(velocity * Time.deltaTime);
+
+            
         }
 
+//TODO Refactor out
         private IEnumerator WaitforMapLoad()
         {
             Debug.Log("Waiting For Proper Collider Initialization");
@@ -93,26 +94,12 @@ namespace RIT.RochesterLOS.Player
             });
             
             mapReady = true;
+            EventManager.TriggerEvent(Events.Events.WorldReady, arcGISMapComponent.View);
             Debug.Log("Colliders Found!");
         }
 
-        private ArcGISRotation CalcualteBearing(ArcGISPoint p1, ArcGISPoint p2)
-        {
-            
-            double longDelta = p2.X - p1.X;
-            var X = math.cos(p2.Y) * math.sin(longDelta);
-            var latP1P2 = math.cos(p1.Y) * math.sin(p2.Y);
-            var Y =  latP1P2 - latP1P2 *  math.cos(longDelta);
-            Debug.Log($"Radians: {X}, {Y}");
-            //var b = math.atan2(X, Y);
-            X = math.degrees(X);
-            Y = math.degrees(Y);
 
-            Debug.Log($"Degrees: {X}, {Y}");
-
-            return new ArcGISRotation(Y, 90, 0);
-        }
-
+        [ExecuteAlways]
         private void OnDrawGizmos()
         {
             Gizmos.DrawLine(transform.position, transform.position + (Vector3.down * initialLoadDistanceCheck));
