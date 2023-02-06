@@ -66,9 +66,9 @@ namespace RIT.RochesterLOS.Signage
                 {
                     signs[i - 1] = new SignData()
                     {
-                        Lat = float.Parse(values[0]),
-                        Lon = float.Parse(values[1]),
-                        Elev = float.Parse(values[2]),
+                        Lat = double.Parse(values[0]),
+                        Lon = double.Parse(values[1]),
+                        Elev = double.Parse(values[2]),
                         Type = !string.IsNullOrEmpty(values[3]) ? (SignType)Enum.Parse(typeof(SignType), values[3], true) : SignType.BASE,
                         Name = !string.IsNullOrEmpty(values[4]) ? values[4] : "Sign " + values[3],
 
@@ -98,9 +98,9 @@ namespace RIT.RochesterLOS.Signage
 #nullable enable
     internal struct SignData
     {
-        public float Lat { get; set; }
-        public float Lon { get; set; }
-        public float Elev { get; set; }
+        public double Lat { get; set; }
+        public double Lon { get; set; }
+        public double Elev { get; set; }
         public string? Name { get; set; }
         public SignType Type { get; set; }
     }
