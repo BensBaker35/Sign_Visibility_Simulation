@@ -8,27 +8,30 @@ using System.Collections.Generic;
 
 namespace RIT.RochesterLOS.Signage.Placement
 {
+    [RequireComponent(typeof(SignManager))]
     public class PlacementController : MonoBehaviour
     {
         [SerializeField] private Camera mainCamera;
-        [SerializeField] private GameObject signPlacementObject;
+        [SerializeField] private double baseOffset = 5d;
 
         private ArcGISMapComponent arcGISMapComponent;
-        private List<Signage.SignData> data;
-        
-        
+        private SignManager signManager;
+        //private List<Signage.SignData> data;
+
+
         private void Awake()
         {
-            EventManager.Listen(Events.Events.WorldReady, (p) => 
+            EventManager.Listen(Events.Events.WorldReady, (p) =>
             {
                 arcGISMapComponent = (ArcGISMapComponent)p;
-                
+
             });
+            signManager = GetComponent<SignManager>();
+            //data = new();
         }
         // Start is called before the first frame update
         void Start()
         {
-
         }
 
         // Update is called once per frame
@@ -44,25 +47,36 @@ namespace RIT.RochesterLOS.Signage.Placement
                 {
                     var simPosition = math.inverse(arcGISMapComponent.WorldMatrix).HomogeneousTransformPoint(hit.point.ToDouble3());
                     var geoPosition = arcGISMapComponent.View.WorldToGeographic(simPosition);
-                    geoPosition = Esri.ArcGISMapsSDK.Utils.GeoCoord.GeoUtils.ProjectToSpatialReference(geoPosition, ArcGISSpatialReference.WGS84());                
-                    
+                    geoPosition = Esri.ArcGISMapsSDK.Utils.GeoCoord.GeoUtils.ProjectToSpatialReference(geoPosition, ArcGISSpatialReference.WGS84());
+
+
+                    var signPlacementObject = signManager.GetObjectForType(SignType.BASE);
+
                     var newSign = Instantiate(signPlacementObject, hit.point, Quaternion.identity, transform);
                     var newSignLocation = newSign.GetComponent<ArcGISLocationComponent>();
                     newSignLocation.enabled = true;
-                    newSignLocation.Position = geoPosition;
-
-                    data.Add(new SignData(){
+                    newSignLocation.Position = new ArcGISPoint(
+                        geoPosition.X, 
+                        geoPosition.Y, 
+                        geoPosition.Z + baseOffset, 
+                        geoPosition.SpatialReference
+                    );
+                    
+                    signManager.AddNewSign(new SignData()
+                    {
                         Lat = geoPosition.Y,
                         Lon = geoPosition.X,
                         Elev = geoPosition.Z,
                         Name = "From Placement",
-                        Type = SignType.BASE
+                        Type = SignType.BASE,
                     });
+
+
 
                 }
             }
         }
 
-        
+
     }
 }

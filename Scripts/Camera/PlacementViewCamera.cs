@@ -12,6 +12,8 @@ namespace RIT.RochesterLOS.CustomCamera
 {
     public class PlacementViewCamera : ArcGISCameraComponent, IControllable
     {
+        [SerializeField] private float zoomMultiplier = 1.5f;
+        [SerializeField] private float zoomDuration = 1f;
 
         void Awake()
         {
@@ -42,6 +44,9 @@ namespace RIT.RochesterLOS.CustomCamera
             {
                 transform.Rotate(Vector3.forward * -look.x);
             }
+
+            var angle = Mathf.Abs((this.verticalFov / scroll.y) - this.verticalFov);
+            verticalFov = Mathf.MoveTowards(this.verticalFov, scroll.y * this.verticalFov, angle / zoomDuration * Time.deltaTime);
         }
     }
 }

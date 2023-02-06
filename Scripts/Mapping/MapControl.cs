@@ -23,7 +23,7 @@ namespace RIT.RochesterLOS.Mapping
     {
 
         public static readonly string MAIN_API_KEY = "AAPKd7b681581d6a439cb98d19ac0aefb8c0ZNzHfjFulf5_xRityexgJc_CHdbmCH7YFYyqSheV7vwp_isYxmEPO_4MumWoV8rE";
-        
+        [SerializeField] private ArcGISBasemapStyle style = ArcGISBasemapStyle.ArcGISImageryStandard;
         private static  readonly ArcGISPoint ROCHESTER_COORDINATES = new(-77.6066334, 43.1566377, 176, ArcGISSpatialReference.WGS84()); // X, Y, Z, Spatial Reference
         private ArcGISMapComponent arcGISMapComponent;
         private ArcGISCameraComponent cameraComponent;
@@ -53,7 +53,7 @@ namespace RIT.RochesterLOS.Mapping
 
             var arcGISMap = new Esri.GameEngine.Map.ArcGISMap(arcGISMapComponent.MapType);
             
-            arcGISMap.Basemap = new ArcGISBasemap(ArcGISBasemapStyle.ArcGISImageryStandard, MAIN_API_KEY);
+            arcGISMap.Basemap = new ArcGISBasemap(style, MAIN_API_KEY);
             
 
             arcGISMap.Elevation = new Esri.GameEngine.Map.ArcGISMapElevation(new Esri.GameEngine.Elevation.ArcGISImageElevationSource(

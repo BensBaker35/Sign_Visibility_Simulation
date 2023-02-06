@@ -7,6 +7,7 @@ using System;
 using Esri.ArcGISMapsSDK.Components;
 using Esri.GameEngine.Geometry;
 using RIT.RochesterLOS.LOS;
+using System.Linq;
 
 namespace RIT.RochesterLOS.Signage
 {
@@ -15,6 +16,7 @@ namespace RIT.RochesterLOS.Signage
         private string signDataFileLocation = "Assets/Data/SignPlaces.csv";
         [SerializeField] List<SignTypeToObject> signTypeKVP;
         private Dictionary<SignType, GameObject> signTypeMap;
+        private List<SignData> signData;
 
         private async void Awake()
         {
@@ -31,12 +33,12 @@ namespace RIT.RochesterLOS.Signage
             }
 
 
-            var signData = await Serialization.SignSerializer.Deserialize();
+            var signDataArray = await Serialization.SignSerializer.Deserialize();
+            signData = signDataArray.ToList();
             foreach (var sign in signData)
             {
-                GameObject signPrefab;
-                var success = signTypeMap.TryGetValue(sign.Type, out signPrefab);
-                var signObject = Instantiate(success ? signPrefab : signTypeMap[SignType.BASE], transform);
+                var signPrefab = GetObjectForType(sign.Type);
+                var signObject = Instantiate(signPrefab, transform);
                 var signLocation = signObject.GetComponent<ArcGISLocationComponent>();
 
                 signLocation.enabled = true;
@@ -52,7 +54,23 @@ namespace RIT.RochesterLOS.Signage
 
         }
 
+        internal GameObject GetObjectForType(SignType sType)
+        {   
+            GameObject toReturn;
+            if(signTypeMap.TryGetValue(sType, out toReturn))
+            {
+                return toReturn;
+            }
+            else 
+            {
+                return signTypeMap[SignType.BASE];
+            }
+        }
         
+        internal void AddNewSign(SignData data)
+        {
+            signData.Add(data);
+        }
 
         /// <summary>
         /// Helper Class to programatically create mapping of sign objects to type

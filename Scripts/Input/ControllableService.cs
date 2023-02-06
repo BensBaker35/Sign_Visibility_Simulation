@@ -41,11 +41,12 @@ namespace RIT.RochesterLOS.Control
             
             var mouseX = Input.GetAxis("Mouse X") * lookSpeed * Time.deltaTime;
             var mouseY = Input.GetAxis("Mouse Y") * lookSpeed * Time.deltaTime;
+            var mouseScroll = Input.GetAxis("Mouse ScrollWheel") * Time.deltaTime;
             
             var mouseVec = new Vector3(mouseX, mouseY, 0);
-            var scrollVec = Input.mouseScrollDelta * Time.deltaTime;
+            //var scrollVec = Input.mouseScrollDelta * Time.deltaTime;
 
-            controlling.PushMouseInput(mouseVec, scrollVec);
+            controlling.PushMouseInput(mouseVec, new Vector2(0, mouseScroll));
 
             var x = Input.GetAxis("Horizontal");
             var z = Input.GetAxis("Vertical");
