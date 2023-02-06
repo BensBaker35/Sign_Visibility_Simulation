@@ -21,7 +21,7 @@ namespace RIT.RochesterLOS.Signage.Placement
         {
             EventManager.Listen(Events.Events.WorldReady, (p) => 
             {
-                arcGISMapComponent =  (ArcGISMapComponent)p;
+                arcGISMapComponent = (ArcGISMapComponent)p;
                 
             });
         }

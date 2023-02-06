@@ -31,7 +31,7 @@ namespace RIT.RochesterLOS.Signage
             }
 
 
-            var signData = await ReadSignsAsync();
+            var signData = await Serialization.SignSerializer.Deserialize();
             foreach (var sign in signData)
             {
                 GameObject signPrefab;
@@ -52,36 +52,7 @@ namespace RIT.RochesterLOS.Signage
 
         }
 
-        private async Task<SignData[]> ReadSignsAsync()
-        {
-            var data = await File.ReadAllLinesAsync(signDataFileLocation, System.Text.Encoding.UTF8);
-
-            var signs = new SignData[data.Length - 1]; //Don't care about first row headers
-            for (var i = 1; i < data.Length; i++)
-            {
-                var line = data[i];
-                var values = line.Split(',');
-
-                try
-                {
-                    signs[i - 1] = new SignData()
-                    {
-                        Lat = double.Parse(values[0]),
-                        Lon = double.Parse(values[1]),
-                        Elev = double.Parse(values[2]),
-                        Type = !string.IsNullOrEmpty(values[3]) ? (SignType)Enum.Parse(typeof(SignType), values[3], true) : SignType.BASE,
-                        Name = !string.IsNullOrEmpty(values[4]) ? values[4] : "Sign " + values[3],
-
-                    };
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"Failed to parse: \n{e}\n{line}, {i}");
-                }
-            }
-
-            return signs;
-        }
+        
 
         /// <summary>
         /// Helper Class to programatically create mapping of sign objects to type
