@@ -8,6 +8,7 @@ using Esri.ArcGISMapsSDK.Components;
 using Esri.GameEngine.Geometry;
 using RIT.RochesterLOS.LOS;
 using System.Linq;
+using RIT.RochesterLOS.Events;
 
 namespace RIT.RochesterLOS.Signage
 {
@@ -18,7 +19,7 @@ namespace RIT.RochesterLOS.Signage
         private Dictionary<SignType, GameObject> signTypeMap;
         private List<SignData> signData;
 
-        private async void Awake()
+        private void Awake()
         {
             if (signTypeKVP.Count == 0)
             {
@@ -33,6 +34,11 @@ namespace RIT.RochesterLOS.Signage
             }
 
 
+
+        }
+
+        private async void Start()
+        {
             var signDataArray = await Serialization.SignSerializer.Deserialize();
             signData = signDataArray.ToList();
             foreach (var sign in signData)
@@ -42,15 +48,13 @@ namespace RIT.RochesterLOS.Signage
                 var signLocation = signObject.GetComponent<ArcGISLocationComponent>();
 
                 signLocation.enabled = true;
+                signLocation.Rotation = new Esri.ArcGISMapsSDK.Utils.GeoCoord.ArcGISRotation(0, 90, 0);
                 signLocation.Position = new Esri.GameEngine.Geometry.ArcGISPoint(sign.Lon, sign.Lat, sign.Elev, ArcGISSpatialReference.WGS84());
                 
                 signObject.name = sign.Name;
             }
-        }
 
-        private void Start()
-        {
-
+            EventManager.TriggerEvent(Events.Events.SignsPlaced, null);
 
         }
 

@@ -45,9 +45,7 @@ namespace RIT.RochesterLOS.Signage.Placement
                 RaycastHit hit;
                 if (Physics.Raycast(mouseRay, out hit))
                 {
-                    var simPosition = math.inverse(arcGISMapComponent.WorldMatrix).HomogeneousTransformPoint(hit.point.ToDouble3());
-                    var geoPosition = arcGISMapComponent.View.WorldToGeographic(simPosition);
-                    geoPosition = Esri.ArcGISMapsSDK.Utils.GeoCoord.GeoUtils.ProjectToSpatialReference(geoPosition, ArcGISSpatialReference.WGS84());
+                    var geoPosition = Analysis.AnalysisUtil.SimPositionToGeo(hit.point, ArcGISSpatialReference.WGS84());
 
 
                     var signPlacementObject = signManager.GetObjectForType(SignType.BASE);
@@ -61,7 +59,7 @@ namespace RIT.RochesterLOS.Signage.Placement
                         geoPosition.Z + baseOffset, 
                         geoPosition.SpatialReference
                     );
-                    
+
                     signManager.AddNewSign(new SignData()
                     {
                         Lat = geoPosition.Y,

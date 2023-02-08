@@ -25,6 +25,12 @@ namespace RIT.RochesterLOS.Player
         private bool isGrounded = false;
         private Vector3 velocity;
         private float gravity = -9.81f;
+        private bool mapReady = false;
+
+        void Awake()
+        {
+            EventManager.Listen(Events.Events.WorldReady, (_) => mapReady = true);
+        }
 
         // Start is called before the first frame update
         void Start()
@@ -38,6 +44,7 @@ namespace RIT.RochesterLOS.Player
         // Update is called once per frame
         void Update()
         {
+            if(!mapReady) return;
             
             isGrounded = Physics.CheckSphere(transform.position, groundingDistance);
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using RIT.RochesterLOS.LOS;
 using Esri.ArcGISMapsSDK.Components;
+using RIT.RochesterLOS.Events;
 
 namespace RIT.RochesterLOS.Signage
 {
@@ -16,12 +17,15 @@ namespace RIT.RochesterLOS.Signage
         private float maxDistance = 15f; //TODO Provide some real world value
         void Awkae()
         {
-            
+            Debug.Log("Sign Awake");
+            EventManager.Listen(Events.Events.WorldReady, SetOnGround);
         }
 
         // Start is called before the first frame update
         void Start()
         {
+            Debug.Log("Sign Start");
+            EventManager.Listen(Events.Events.WorldReady, SetOnGround);
             triggerCollider = GetComponent<SphereCollider>();
             locationComponent = GetComponent<ArcGISLocationComponent>();
             actions = GetComponents<PlayerActivatedAction>();
@@ -42,6 +46,24 @@ namespace RIT.RochesterLOS.Signage
             {
                 a.PlayerInActivation(other);
             }
+        }
+
+        public void SetOnGround(object _)
+        {
+            Debug.Log("Set On Ground");
+            RaycastHit hit;
+            if(Physics.Raycast(transform.position, Vector3.down, out hit, maxDistance))
+            {
+                Debug.Log(hit.collider.gameObject.name);
+                var groundPosition = Analysis.AnalysisUtil.SimPositionToGeo(hit.point);
+                locationComponent.Position = groundPosition;
+            }
+        }
+
+        [ExecuteAlways]
+        private void OnDrawGizmos()
+        {
+            Gizmos.DrawLine(transform.position, transform.position + (Vector3.down * maxDistance));
         }
     }
 }

@@ -5,10 +5,14 @@ using UnityEngine;
 using System;
 using ProjNet.CoordinateSystems.Transformations;
 using ProjNet.CoordinateSystems;
+using RIT.RochesterLOS.Events;
+using Unity.Mathematics;
+using Esri.GameEngine.View;
+using Esri.HPFramework;
 
 namespace RIT.RochesterLOS.Analysis
 {
-    
+
     public class AnalysisUtil
     {
         public enum ConvertTo
@@ -29,19 +33,21 @@ namespace RIT.RochesterLOS.Analysis
         private CoordinateSystemFactory fac;
         private CoordinateTransformationFactory ctfac;
         private ICoordinateTransformation wgs84ToNYW;
+        private double4x4 worldMatrix;
+        private ArcGISView view;
         private static AnalysisUtil instance;
 
-        public static AnalysisUtil Instance 
+        private static AnalysisUtil Instance
         {
-            get 
+            get
             {
-                if(instance == null)
+                if (instance == null)
                 {
                     instance = new();
                 }
                 return instance;
             }
-            
+
         }
 
         private AnalysisUtil()
@@ -52,12 +58,20 @@ namespace RIT.RochesterLOS.Analysis
 
             ctfac = new();
             wgs84ToNYW = ctfac.CreateFromCoordinateSystems(wgs84, nyw);
+
+
+            EventManager.Listen(Events.Events.WorldReady, SaveMapTools);
         }
 
-
+        private void SaveMapTools(object package)
+        {
+            var component = (Esri.ArcGISMapsSDK.Components.ArcGISMapComponent)package;
+            worldMatrix = component.WorldMatrix;
+            view = component.View;
+        }
         private void _TestConvertCoordinates(ArcGISPoint p1)
         {
-            var points = wgs84ToNYW.MathTransform.Transform(new[] {p1.X, p1.Y});
+            var points = wgs84ToNYW.MathTransform.Transform(new[] { p1.X, p1.Y });
             Debug.Log($"X: {points[0]}, Y: {points[1]}");
 
             var inversePoints = wgs84ToNYW.MathTransform.Inverse().Transform(points);
@@ -72,7 +86,7 @@ namespace RIT.RochesterLOS.Analysis
 
         private double[] _convertCoordinateTo(double[] origin, ConvertTo coordTo)
         {
-            switch(coordTo)
+            switch (coordTo)
             {
                 case ConvertTo.NY_STATE_West:
                     return wgs84ToNYW.MathTransform.Transform(origin);
@@ -87,11 +101,11 @@ namespace RIT.RochesterLOS.Analysis
         {
             var inMeters = _convertCoordinateTo(origin, ConvertTo.NY_STATE_West);
             var inMetersTest = inMeters.Clone();
-            if(direction == MoveDirection.EW)
+            if (direction == MoveDirection.EW)
             {
                 inMeters[0] += amount;
             }
-            else 
+            else
             {
                 inMeters[1] += amount;
             }
@@ -111,7 +125,7 @@ namespace RIT.RochesterLOS.Analysis
 
         private void _toRadians(ref double[] toConvert)
         {
-            for(var i = 0; i < toConvert.Length; i++)
+            for (var i = 0; i < toConvert.Length; i++)
             {
                 toConvert[i] *= Math.PI * 180;
             }
@@ -119,7 +133,7 @@ namespace RIT.RochesterLOS.Analysis
 
         public static ArcGISPoint MoveCoordinate(ArcGISPoint point, float amount, MoveDirection dir)
         {
-            var pointAsDouble = new Double[]{point.X, point.Y};
+            var pointAsDouble = new Double[] { point.X, point.Y };
             var finalPoint = Instance._moveCoordinates(pointAsDouble, amount, dir);
             return new ArcGISPoint(finalPoint[0], finalPoint[1], point.Z, ArcGISSpatialReference.WGS84());
             // var builder = (ArcGISPolylineBuilder) ArcGISGeometryBuilder.Create(ArcGISGeometryType.Polyline, ArcGISSpatialReference.WGS84());
@@ -136,14 +150,31 @@ namespace RIT.RochesterLOS.Analysis
 
         public static double DistanceBetweenPoints(ArcGISPoint origin, ArcGISPoint measureTo)
         {
-            
+
             return ArcGISGeometryEngine.Distance(origin, measureTo);
-            
+
             //return Instance._calcDistance(new[] {origin.X, origin.Y}, new[] {measureTo.X, measureTo.Y});
         }
 
+        public static ArcGISPoint SimPositionToGeo(Vector3 simPoint)
+        {
+            return SimPositionToGeo(simPoint, ArcGISSpatialReference.WGS84());
+        }
+        public static ArcGISPoint SimPositionToGeo(Vector3 simPoint, ArcGISSpatialReference projectSpatial)
+        {
+           
+            var geoPosition = Instance._simPositionToGeo(simPoint.ToDouble3());
+            return Esri.ArcGISMapsSDK.Utils.GeoCoord.GeoUtils.ProjectToSpatialReference(geoPosition, projectSpatial);
+        }
+
+        private ArcGISPoint _simPositionToGeo(double3 simPoint)
+        {
+            var simPosition = math.inverse(worldMatrix).HomogeneousTransformPoint(simPoint);
+            var geoPosition = view.WorldToGeographic(simPosition);
+            return geoPosition;
+        }
 
     }
 
-    
+
 }
