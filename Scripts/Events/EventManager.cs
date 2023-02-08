@@ -8,6 +8,7 @@ namespace RIT.RochesterLOS.Events
     {
         public delegate void OnEventTrigger(object package);
         private Dictionary<Events, OnEventTrigger> listeners;
+        private Dictionary<Events, object> eventCache;
         private static EventManager instance;
         private static EventManager Instance
         {
@@ -28,6 +29,7 @@ namespace RIT.RochesterLOS.Events
         private EventManager()
         {
             listeners = new();
+            eventCache = new();
         }
 
         public static void Listen(Events triggerEvent, OnEventTrigger listener)
@@ -50,6 +52,11 @@ namespace RIT.RochesterLOS.Events
                     thisEvent += listener;
                     listeners.Add(triggerEvent, thisEvent);
                 }
+
+                if(eventCache.ContainsKey(triggerEvent))
+                {
+                    listener(eventCache[triggerEvent]);
+                }
             }
 
         }
@@ -66,13 +73,28 @@ namespace RIT.RochesterLOS.Events
             {
                 thisEvent?.Invoke(package);
             }
+
+            if(eventCache.ContainsKey(eventToTrigger))
+            {
+                eventCache[eventToTrigger] = package;
+            } 
+            else
+            {
+                eventCache.Add(eventToTrigger, package);
+            }
         }
     }
 
     public enum Events
     {
         None,
-        WorldReady
+        WorldReady,
+        ChangeScene,
+        EscapeMenuToggle,
+        Save,
+        SaveAs,
+        Load,
+        SignsPlaced,
     }
 }
 
