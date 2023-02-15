@@ -7,19 +7,26 @@ using RIT.RochesterLOS.UI;
 
 namespace RIT.RochesterLOS.Scenes
 {
+    /*
+    Only used in the start screen to initialize 
+    */
     [DisallowMultipleComponent]
     public class SceneBootStrap : MonoBehaviour
     {
-        [SerializeField] private GameObject mainMenuPrefab;
         [SerializeField] private string parentUIScene = "GeneralUI";
         // Start is called before the first frame update
         void Start()
         {
-            if(SceneManager.GetSceneByName(parentUIScene) != null) return;
+            if (SceneManager.GetSceneByName(parentUIScene) == null) 
+            {
+                SceneManager.LoadScene(parentUIScene, LoadSceneMode.Additive);
+            } 
+
             
-            SceneManager.LoadScene(parentUIScene, LoadSceneMode.Additive);
             var s = SceneManager.GetSceneByName(parentUIScene);
-            var ui = s.GetRootGameObjects().First(o => o.GetType() == typeof(GeneralUIManager));
+            var ui = s.GetRootGameObjects().First(o => o.GetComponent<GeneralUIManager>() != null);
+            ui?.GetComponent<GeneralUIManager>().Init();
+            
 
         }
 
@@ -27,6 +34,12 @@ namespace RIT.RochesterLOS.Scenes
         void Update()
         {
 
+        }
+
+
+        private void PopulateSceneSerializers()
+        {
+            
         }
     }
 }

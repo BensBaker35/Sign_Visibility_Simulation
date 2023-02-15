@@ -668,6 +668,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34b7f77fce962e849b28f245827fc143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  menuRoot: {fileID: 1004396933049743346}
+  mainButtonPanel: {fileID: 0}
+  fileExplorerPanel: {fileID: 0}
+  MapConfigPanel: {fileID: 0}
 --- !u!1 &6275119864035384855
 GameObject:
   m_ObjectHideFlags: 0

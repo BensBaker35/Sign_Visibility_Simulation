@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using RIT.RochesterLOS.Events;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -49,5 +50,10 @@ namespace RIT.RochesterLOS.Scenes
                 Debug.LogError("Change Scene Event package is an unsupported type");
             }
         }
+
+        private GameObject GetUIInjection()
+        {
+            return SceneManager.GetActiveScene().GetRootGameObjects().First();
+        }
     }
-}
+}                                                                                                                                                                                                                                                                           

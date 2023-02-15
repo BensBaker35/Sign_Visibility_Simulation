@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using RIT.RochesterLOS.Events;
+using RIT.RochesterLOS.Serialization;
 using UnityEngine;
 
 namespace RIT.RochesterLOS.UI
@@ -8,42 +9,66 @@ namespace RIT.RochesterLOS.UI
     public class GeneralUIManager : MonoBehaviour
     {
         //TODO Get from some scene config descriptor
-        [SerializeField] private GameObject EscapeMenuUIPrefab;
-        private bool escapeMenuActive = false;
-        private GameObject activeMenu = null;
+        //[SerializeField] private GameObject EscapeMenuUIPrefab;
+        [SerializeField] private List<GameObject> menusInScene;
 
-        // Start is called before the first frame update
-        void Start()
+        void Awake()
         {
-            EventManager.Listen(Events.Events.EscapeMenuToggle, EscapeMenuToggle);
-            //DontDestroyOnLoad(this.gameObject);
-        }
+            Serializer.Instance.RegisterUnitySerializationTarget<UIInjector>("SceneAssets");
+            EventManager.Listen(Events.Events.ChangeScene, SceneChanged);
+        }      
 
-        // Update is called once per frame
-        void Update()
+        public void Init()
         {
-            if(Input.GetKey(KeyCode.Escape))
+            Debug.Log("Init UI");
+            SceneChanged("Start");
+        }  
+
+
+        private void SceneChanged(object package)
+        {
+            if(package is string)
             {
-                EventManager.TriggerEvent(Events.Events.EscapeMenuToggle, null);
+                var str = (string)package;
+                var uiInjection = Serializer.Instance.GetUnityObject<UIInjector>(str);
+                if(uiInjection == null)
+                {
+                    Debug.LogError($"Failed to find UI object for {str}");
+                }
+
+                if(menusInScene != null && menusInScene.Count > 0)
+                {
+                    RemoveOldMenus();
+                }
+                SetUpSceneUI(uiInjection.MenuRoots);
+
             }
         }
 
-        private void EscapeMenuToggle(object _)
+        private void SetUpSceneUI(List<GameObject> menus)
         {
-            escapeMenuActive = !escapeMenuActive;
-            if (escapeMenuActive)
+            if(menusInScene == null)
             {
-                activeMenu = Instantiate(EscapeMenuUIPrefab, transform);
+                menusInScene = new();
             }
-            else
+            
+            foreach(var menu in menus)
             {
-                Destroy(activeMenu);
+                menusInScene.Add(Instantiate(menu, this.transform));
             }
         }
 
-        public void OnEscapeButtonClick()
+        private void RemoveOldMenus()
         {
-            EventManager.TriggerEvent(Events.Events.EscapeMenuToggle, null);
+            //Possibly make a call to unload the asset
+            foreach(var menu in menusInScene)
+            {
+                Destroy(menu);
+            }
+            
+
         }
+        
     }
+
 }
