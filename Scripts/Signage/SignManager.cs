@@ -21,6 +21,8 @@ namespace RIT.RochesterLOS.Signage
 
         private void Awake()
         {
+            //EventManager.Listen(Events.Events.Save, (_) => Serialization.SignSerializer.Serialize(signData));
+
             if (signTypeKVP.Count == 0)
             {
                 Debug.LogWarning("No Sign Mappings Available, must add prefabs for signs to spawn");

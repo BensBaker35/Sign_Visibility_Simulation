@@ -39,6 +39,7 @@ namespace RIT.RochesterLOS.Events
 
         private void AddListener(Events triggerEvent, OnEventTrigger listener)
         {
+            Debug.Log($"Adding listener to : {triggerEvent} from {listener.Target.ToString()}");
             lock (event_lock)
             {
                 OnEventTrigger thisEvent;
@@ -53,8 +54,9 @@ namespace RIT.RochesterLOS.Events
                     listeners.Add(triggerEvent, thisEvent);
                 }
 
-                if(eventCache.ContainsKey(triggerEvent))
+                if (eventCache.ContainsKey(triggerEvent))
                 {
+                    Debug.Log($"Object in Cache for {triggerEvent}");
                     listener(eventCache[triggerEvent]);
                 }
             }
@@ -68,20 +70,30 @@ namespace RIT.RochesterLOS.Events
 
         private void TriggerListeners(Events eventToTrigger, object package)
         {
-            OnEventTrigger thisEvent;
-            if (listeners.TryGetValue(eventToTrigger, out thisEvent))
+            lock (event_lock)
             {
-                thisEvent?.Invoke(package);
+                OnEventTrigger thisEvent;
+                if (listeners.TryGetValue(eventToTrigger, out thisEvent))
+                {
+                    thisEvent?.Invoke(package);
+                    foreach(var d in thisEvent.GetInvocationList())
+                    {
+                        Debug.Log("Invoke on: " + d.Target.ToString());
+                    }
+                }
+
+                if (eventCache.ContainsKey(eventToTrigger))
+                {
+                    Debug.Log($"Updating Event cache: {eventToTrigger}, {package}");
+                    eventCache[eventToTrigger] = package;
+                }
+                else
+                {
+                    Debug.Log($"Adding Event to cache: {eventToTrigger}, {package}");
+                    eventCache.Add(eventToTrigger, package);
+                }
             }
 
-            if(eventCache.ContainsKey(eventToTrigger))
-            {
-                eventCache[eventToTrigger] = package;
-            } 
-            else
-            {
-                eventCache.Add(eventToTrigger, package);
-            }
         }
     }
 
@@ -91,9 +103,6 @@ namespace RIT.RochesterLOS.Events
         WorldReady,
         ChangeScene,
         EscapeMenuToggle,
-        Save,
-        SaveAs,
-        Load,
         SignsPlaced,
     }
 }

@@ -58,16 +58,33 @@ namespace RIT.RochesterLOS.Analysis
 
             ctfac = new();
             wgs84ToNYW = ctfac.CreateFromCoordinateSystems(wgs84, nyw);
-
+            Debug.Log("Creating Util");
 
             EventManager.Listen(Events.Events.WorldReady, SaveMapTools);
         }
 
+        private AnalysisUtil(double4x4 matrix, ArcGISView view)
+        {
+            worldMatrix = matrix;
+            this.view = view;
+        }
+
+        public static void Initialize(double4x4 worldMatrx, ArcGISView view)
+        {
+            instance = new(worldMatrx, view);
+        }
+
         private void SaveMapTools(object package)
         {
+            Debug.Log("Saveing Map tools");
             var component = (Esri.ArcGISMapsSDK.Components.ArcGISMapComponent)package;
             worldMatrix = component.WorldMatrix;
             view = component.View;
+
+            if(view == null)
+            {
+                Debug.LogWarning("Incoming Map View from WorldReady Event is null");
+            }
         }
         private void _TestConvertCoordinates(ArcGISPoint p1)
         {
@@ -161,7 +178,12 @@ namespace RIT.RochesterLOS.Analysis
             return SimPositionToGeo(simPoint, ArcGISSpatialReference.WGS84());
         }
         public static ArcGISPoint SimPositionToGeo(Vector3 simPoint, ArcGISSpatialReference projectSpatial)
-        {
+        {   
+            if(simPoint == null)
+            {
+                Debug.LogError("Cannot compute position of null");
+                return null;
+            }
            
             var geoPosition = Instance._simPositionToGeo(simPoint.ToDouble3());
             return Esri.ArcGISMapsSDK.Utils.GeoCoord.GeoUtils.ProjectToSpatialReference(geoPosition, projectSpatial);
@@ -172,6 +194,7 @@ namespace RIT.RochesterLOS.Analysis
             var simPosition = math.inverse(worldMatrix).HomogeneousTransformPoint(simPoint);
             var geoPosition = view.WorldToGeographic(simPosition);
             return geoPosition;
+    
         }
 
     }

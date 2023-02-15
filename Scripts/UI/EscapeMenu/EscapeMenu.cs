@@ -39,7 +39,6 @@ namespace RIT.RochesterLOS.UI.EscapeMenu
         // Update is called once per frame
         void Update()
         {
-
         }
 
         public void OnButtonClick(int action)
@@ -47,10 +46,16 @@ namespace RIT.RochesterLOS.UI.EscapeMenu
             var desiredAction = (EscapeMenuButtonAction)action;
             switch(desiredAction)
             {
-                case EscapeMenuButtonAction.SwitchToLOSView:
-                case EscapeMenuButtonAction.OpenMapConfig:
-                case EscapeMenuButtonAction.LoadSigns:
                 case EscapeMenuButtonAction.SaveSigns:
+                //EventManager.TriggerEvent(Events.Events.Save, null);
+                break;
+                case EscapeMenuButtonAction.LoadSigns:
+                //EventManager.TriggerEvent(Events.Events.Load, null);
+                break;
+                case EscapeMenuButtonAction.SwitchToLOSView:
+                EventManager.TriggerEvent(Events.Events.ChangeScene, "LOS_Explorable");
+                break;
+                case EscapeMenuButtonAction.OpenMapConfig:
                 default:
                 Debug.LogWarning($"Escape Menu action not supported {action}");
                 break;

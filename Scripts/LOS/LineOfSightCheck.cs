@@ -9,7 +9,8 @@ namespace RIT.RochesterLOS.LOS
     public class LineOfSightCheck : PlayerActivatedAction
     {
 
-        //[SerializeField] private Transform playerTarget;
+        [SerializeField] private Transform rayCaster;
+        [SerializeField] private int raycastLayer = 3;
         private LineRenderer losRenderer;
 
         // Start is called before the first frame update
@@ -42,17 +43,21 @@ namespace RIT.RochesterLOS.LOS
 
         void TakeAction(Collider player)
         {
-            var direction = player.transform.position - transform.position;
+            if(rayCaster == null){
+                Debug.LogWarning("No Raycaster Defined, using default");
+                rayCaster = transform;
+            }
+            var direction = player.transform.position - rayCaster.position;
 
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, direction, out hit))
+            if (Physics.Raycast(rayCaster.position, direction, out hit))
             {
                 var hitPlayer = hit.transform.Equals(player.transform);
                 //Debug.Log(hitPlayer ? "Has LOS" : "Lost LOS");
                 losRenderer.endColor = losRenderer.startColor = hitPlayer ? Color.green : Color.red;
                 
                 losRenderer.material.SetFloat("_Has_LOS", hitPlayer ? 1f : 0f);//_Has_LOS is defined by shader
-                losRenderer.SetPositions(new []{this.transform.position, player.transform.position});
+                losRenderer.SetPositions(new []{rayCaster.position, player.transform.position});
                 
             }
         }

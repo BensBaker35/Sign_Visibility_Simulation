@@ -16,13 +16,16 @@ namespace RIT.RochesterLOS.UI
         void Start()
         {
             EventManager.Listen(Events.Events.EscapeMenuToggle, EscapeMenuToggle);
-            DontDestroyOnLoad(this.gameObject);
+            //DontDestroyOnLoad(this.gameObject);
         }
 
         // Update is called once per frame
         void Update()
         {
-
+            if(Input.GetKey(KeyCode.Escape))
+            {
+                EventManager.TriggerEvent(Events.Events.EscapeMenuToggle, null);
+            }
         }
 
         private void EscapeMenuToggle(object _)

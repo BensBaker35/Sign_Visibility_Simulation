@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 1444.04, g: 1512.5801, b: 2193.3438, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -420,8 +420,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 482318023}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.377, y: -6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -442,13 +442,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   position:
-    x: 0
-    y: 0
-    z: 0
+    x: -77.60663001335136
+    y: 43.156637700000005
+    z: 170
     SRWkid: 4326
   rotation:
     Heading: 0
-    Pitch: 0
+    Pitch: 90
     Roll: 0
 --- !u!114 &482318026
 MonoBehaviour:
@@ -464,15 +464,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_IsInitialized: 1
   m_LocalPosition:
-    x: 0
-    y: 0
-    z: -0.0000000007081154551613622
+    x: -8639130.535268256
+    y: 170
+    z: 5335844.174240661
   m_LocalRotation:
     value:
-      x: 0.70710677
+      x: 0
       y: 0
       z: 0
-      w: 0.70710677
+      w: 1
   m_LocalScale:
     x: 1
     y: 1
@@ -507,6 +507,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 536ff52f477a21e47a17fa6153067804, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  style: 1
 --- !u!4 &534646889
 Transform:
   m_ObjectHideFlags: 0
@@ -541,11 +542,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 482318024}
     m_Modifications:
-    - target: {fileID: 4592914754718972499, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
-        type: 3}
-      propertyPath: moveSpeed
-      value: 25
-      objectReference: {fileID: 0}
     - target: {fileID: 4592914754718972501, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
         type: 3}
       propertyPath: m_RootOrder
@@ -554,12 +550,12 @@ PrefabInstance:
     - target: {fileID: 4592914754718972501, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 41.83
+      value: 45.17
       objectReference: {fileID: 0}
     - target: {fileID: 4592914754718972501, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -12.73
+      value: -5.62
       objectReference: {fileID: 0}
     - target: {fileID: 4592914754718972501, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
         type: 3}
@@ -605,41 +601,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 4592914754907978590, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 3.5670013
-      objectReference: {fileID: 0}
-    - target: {fileID: 4592914754907978590, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.1899996
-      objectReference: {fileID: 0}
-    - target: {fileID: 4592914754907978590, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -9.313226e-10
-      objectReference: {fileID: 0}
-    - target: {fileID: 4592914754907978590, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4592914754907978590, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.00000014901161
-      objectReference: {fileID: 0}
-    - target: {fileID: 4592914754907978591, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
-        type: 3}
-      propertyPath: far clip plane
-      value: 533557760
-      objectReference: {fileID: 0}
-    - target: {fileID: 4592914754907978591, guid: 239867e647cf0f6428dbbf7c4a2c65d1,
-        type: 3}
-      propertyPath: near clip plane
-      value: 200000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 239867e647cf0f6428dbbf7c4a2c65d1, type: 3}
@@ -689,7 +650,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   signTypeKVP:
   - TypeOfSign: 0
-    SignPrefab: {fileID: 7203749607987196900, guid: 65eecd6aa0be7874490236a655b39c24,
+    SignPrefab: {fileID: 7467164172105230599, guid: 907e24e21ab3f5c4eb57e053896ddc94,
       type: 3}
 --- !u!1 &1895443621
 GameObject:

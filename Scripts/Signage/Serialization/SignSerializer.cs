@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using RIT.RochesterLOS.Events;
 using UnityEngine;
 
 namespace RIT.RochesterLOS.Signage.Serialization
@@ -11,6 +12,12 @@ namespace RIT.RochesterLOS.Signage.Serialization
     {
 
         private static string SignDataFileLoc = "Assets/Data/SignPlaces.csv";
+
+        static SignSerializer()
+        {
+//          EventManager.Listen(Events.Events.Save, (p) => Serialize((List<SignData>)p));
+//            EventManager.Listen(Events.Events.Load, (_) => Deserialize());
+        }
 
         internal static void Serialize(List<SignData> data)
         {

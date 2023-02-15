@@ -9,10 +9,11 @@ namespace RIT.RochesterLOS.Scenes
 {
     public class SceneSwitcher : MonoBehaviour
     {
+        private string activeScene = "Start";
         void Awake()
         {
             EventManager.Listen(Events.Events.ChangeScene, ChangeScene);
-            DontDestroyOnLoad(this.gameObject);
+            //DontDestroyOnLoad(this.gameObject);
         }
         // Start is called before the first frame update
         void Start()
@@ -31,8 +32,17 @@ namespace RIT.RochesterLOS.Scenes
             if(package is string)
             {
                 var str = (string)package;
-                var sceneLoadOp = SceneManager.LoadSceneAsync(str, LoadSceneMode.Single);
+
+                if (str.Equals(activeScene)) 
+                {
+                    return;
+                }
                 
+                var sceneTask = SceneManager.LoadSceneAsync(str, LoadSceneMode.Additive);
+                sceneTask.completed += (op) => {
+                    SceneManager.UnloadSceneAsync(activeScene);
+                    activeScene = str;
+                };
             }
             else 
             {
