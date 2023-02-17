@@ -51,41 +51,34 @@ namespace RIT.RochesterLOS.UI.EscapeMenu
             //     Destroy(activeMenu);
             // }
             menuActive = !menuActive;
-            this.gameObject.SetActive(menuActive);
+            this.GetMenuRoot().SetActive(menuActive);
         }
 
         public void OnEscapeButtonClick()
         {
             EventManager.TriggerEvent(Events.Events.EscapeMenuToggle, null);
         }
-        public void OnButtonClick(int action)
+        public override void OnButtonClick(int action)
         {
-            var desiredAction = (EscapeMenuButtonAction)action;
+            var desiredAction = (MenuButtonAction)action;
             switch (desiredAction)
             {
-                case EscapeMenuButtonAction.SaveSigns:
+                case MenuButtonAction.SaveSigns:
+                    goto default;
                     //EventManager.TriggerEvent(Events.Events.Save, null);
                     break;
-                case EscapeMenuButtonAction.LoadSigns:
+                case MenuButtonAction.LoadSigns:
+                    goto default;
                     //EventManager.TriggerEvent(Events.Events.Load, null);
                     break;
-                case EscapeMenuButtonAction.SwitchToLOSView:
+                case MenuButtonAction.SwitchToLOSView:
                     EventManager.TriggerEvent(Events.Events.ChangeScene, "LOS_Explorable");
                     break;
-                case EscapeMenuButtonAction.OpenMapConfig:
+                case MenuButtonAction.OpenMapConfig:
                 default:
                     Debug.LogWarning($"Escape Menu action not supported {action}");
                     break;
             }
-        }
-
-        [System.Serializable]
-        public enum EscapeMenuButtonAction
-        {
-            SwitchToLOSView = 0,
-            OpenMapConfig = 1,
-            LoadSigns = 2,
-            SaveSigns = 3,
         }
 
     }

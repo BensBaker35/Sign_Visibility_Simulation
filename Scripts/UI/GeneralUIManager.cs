@@ -41,7 +41,7 @@ namespace RIT.RochesterLOS.UI
                     RemoveOldMenus();
                 }
                 SetUpSceneUI(uiInjection.MenuRoots);
-
+                menusInScene[0].GetComponent<MenuLogic>()?.SetRootActive();
             }
         }
 
@@ -54,8 +54,12 @@ namespace RIT.RochesterLOS.UI
             
             foreach(var menu in menus)
             {
-                menusInScene.Add(Instantiate(menu, this.transform));
+                GameObject menuItem = Instantiate(menu, this.transform);
+                menuItem.SetActive(false);
+                menusInScene.Add(menuItem);
             }
+
+            //menusInScene[0].SetActive(true);
         }
 
         private void RemoveOldMenus()

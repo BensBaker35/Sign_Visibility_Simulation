@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using RIT.RochesterLOS.UI;
+using System;
 
 namespace RIT.RochesterLOS.Scenes
 {
@@ -17,17 +18,51 @@ namespace RIT.RochesterLOS.Scenes
         // Start is called before the first frame update
         void Start()
         {
-            if (SceneManager.GetSceneByName(parentUIScene) == null) 
+            try
             {
-                SceneManager.LoadScene(parentUIScene, LoadSceneMode.Additive);
-            } 
+                SetupUI();
+            }
+            catch (Exception)
+            {
+                Debug.Log("UI not loaded, loading in");
+                var sceneTask = SceneManager.LoadSceneAsync(parentUIScene, LoadSceneMode.Additive);
+                sceneTask.completed += (_) => SetupUI();
+            }
+            // finally
+            // {
+            //     SetupUI();
+            // }
+            // if (SceneManager.GetSceneByName(parentUIScene) == null) 
+            // {
+            //     SceneManager.LoadScene(parentUIScene, LoadSceneMode.Additive);
+            // } 
 
-            
+
+
+
+
+        }
+
+        void SetupUI()
+        {
+            Debug.Log("Setting up UI");
             var s = SceneManager.GetSceneByName(parentUIScene);
-            var ui = s.GetRootGameObjects().First(o => o.GetComponent<GeneralUIManager>() != null);
-            ui?.GetComponent<GeneralUIManager>().Init();
-            
-
+            var ui = s.GetRootGameObjects();
+            foreach(var o in ui)
+            {
+//                Debug.Log(o.name);
+                var genUI = o.GetComponent<GeneralUIManager>();
+                if( genUI != null)
+                {
+                    genUI.Init();
+                }
+            }
+            //.FirstOrDefault(o => o.GetComponent<GeneralUIManager>() != null);
+            if(ui == null)
+            {
+                Debug.LogWarning("Can't find General UI Manager");
+            }
+            //ui?.GetComponent<GeneralUIManager>().Init();
         }
 
         // Update is called once per frame
@@ -39,7 +74,7 @@ namespace RIT.RochesterLOS.Scenes
 
         private void PopulateSceneSerializers()
         {
-            
+
         }
     }
 }
