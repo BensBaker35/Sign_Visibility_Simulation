@@ -21,7 +21,7 @@ namespace RIT.RochesterLOS.Signage
 
         private void Awake()
         {
-            //EventManager.Listen(Events.Events.Save, (_) => Serialization.SignSerializer.Serialize(signData));
+            EventManager.Listen(Events.Events.Save, (_) => Serialization.SignSerializer.Serialize(signData));
 
             if (signTypeKVP.Count == 0)
             {
@@ -39,9 +39,9 @@ namespace RIT.RochesterLOS.Signage
 
         }
 
-        private async void Start()
+        private void Start()
         {
-            var signDataArray = await Serialization.SignSerializer.Deserialize();
+            var signDataArray = Serialization.SignSerializer.Deserialize();
             signData = signDataArray.ToList();
             foreach (var sign in signData)
             {

@@ -11,12 +11,12 @@ namespace RIT.RochesterLOS.Signage.Serialization
     public sealed class SignSerializer
     {
 
-        private static string SignDataFileLoc = "Assets/Data/SignPlaces.csv";
+        private static string SignDataFileLoc = "/Data/";
+        private static string SignDataFileName = "SignPlaces";
 
         static SignSerializer()
         {
-//          EventManager.Listen(Events.Events.Save, (p) => Serialize((List<SignData>)p));
-//            EventManager.Listen(Events.Events.Load, (_) => Deserialize());
+            RIT.RochesterLOS.Serialization.Serializer.Instance.RegisterSerializationTarget<string[]>("/Data/");
         }
 
         internal static void Serialize(List<SignData> data)
@@ -29,12 +29,13 @@ namespace RIT.RochesterLOS.Signage.Serialization
                 lines.Add(line);
             }
 
-            File.WriteAllLinesAsync(SignDataFileLoc, lines, System.Text.Encoding.UTF8);
+            
+            RIT.RochesterLOS.Serialization.Serializer.Instance.SaveObject<string[]>(lines.ToArray(), "SignPlaces");
         }
 
-        internal static async Task<SignData[]> Deserialize()
+        internal static SignData[] Deserialize()
         {
-            var data = await File.ReadAllLinesAsync(SignDataFileLoc, System.Text.Encoding.UTF8);
+            var data = RIT.RochesterLOS.Serialization.Serializer.Instance.GetObject<string[]>(SignDataFileName); //await File.ReadAllLinesAsync(SignDataFileLoc + SignDataFileName, System.Text.Encoding.UTF8);//
 
             var signs = new SignData[data.Length - 1]; //Don't care about first row headers
             for (var i = 1; i < data.Length; i++)

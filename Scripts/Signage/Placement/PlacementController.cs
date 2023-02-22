@@ -5,6 +5,7 @@ using UnityEngine;
 using Unity.Mathematics;
 using Esri.GameEngine.Geometry;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 namespace RIT.RochesterLOS.Signage.Placement
 {
@@ -37,7 +38,7 @@ namespace RIT.RochesterLOS.Signage.Placement
         // Update is called once per frame
         void Update()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
             {
                 var mousePosScreen = Input.mousePosition;
                 var mouseRay = mainCamera.ScreenPointToRay(mousePosScreen);
