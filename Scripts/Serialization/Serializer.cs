@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace RIT.RochesterLOS.Serialization
 {
+    [System.Obsolete("Serializer Singleton is Obsolete, please use a SerializerService")]
     public class Serializer
     {
         //Singleton Members
