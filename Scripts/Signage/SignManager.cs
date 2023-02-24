@@ -39,7 +39,7 @@ namespace RIT.RochesterLOS.Signage
 
         }
 
-        private async Task StartAsync()
+        private async void Start()
         {
             var signDataArray = await Serialization.SignSerializer.Deserialize();
             signData = signDataArray.ToList();
@@ -75,6 +75,7 @@ namespace RIT.RochesterLOS.Signage
         
         internal void AddNewSign(SignData data)
         {
+            Debug.Log(signData == null);
             signData.Add(data);
         }
 

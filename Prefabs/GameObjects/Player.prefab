@@ -149,7 +149,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lookSpeed: 150
   moveSpeed: 25
-  initialLoadDistanceCheck: 3
+  initialLoadDistanceCheck: 1
   lockMode: 0
 --- !u!1 &4592914754907978589
 GameObject:

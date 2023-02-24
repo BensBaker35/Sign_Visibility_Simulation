@@ -29,7 +29,7 @@ namespace RIT.RochesterLOS.Signage.Placement
             });
             signManager = GetComponent<SignManager>();
             //data = new();
-            Debug.Log("SignManager Awake");
+            Debug.Log($"SignManager Awake {signManager != null}");
         }
         // Start is called before the first frame update
         void Start()
@@ -61,7 +61,7 @@ namespace RIT.RochesterLOS.Signage.Placement
                         geoPosition.Z + baseOffset, 
                         geoPosition.SpatialReference
                     );
-
+                    //Debug.Log($"SignManager: {signManager != null}, geoPosition: {geoPosition.Z != null}");
                     signManager.AddNewSign(new SignData()
                     {
                         Lat = geoPosition.Y,

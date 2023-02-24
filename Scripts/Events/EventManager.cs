@@ -63,12 +63,12 @@ namespace RIT.RochesterLOS.Events
 
         }
 
-        public static void TriggerEvent(Events eventToTrigger, object package)
+        public static void TriggerEvent(Events eventToTrigger, object package, bool allowCaching = true)
         {
-            Instance.TriggerListeners(eventToTrigger, package);
+            Instance.TriggerListeners(eventToTrigger, package, allowCaching);
         }
 
-        private void TriggerListeners(Events eventToTrigger, object package)
+        private void TriggerListeners(Events eventToTrigger, object package, bool allowCaching = true)
         {
             lock (event_lock)
             {
@@ -81,6 +81,7 @@ namespace RIT.RochesterLOS.Events
                         Debug.Log("Invoke on: " + d.Target.ToString());
                     }
                 }
+                if(!allowCaching) return;
 
                 if (eventCache.ContainsKey(eventToTrigger))
                 {

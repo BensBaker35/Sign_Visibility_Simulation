@@ -37,6 +37,10 @@ namespace RIT.RochesterLOS.Serialization
             {
                 using (var f = File.OpenRead(dataPath + path))
                 {
+                    if(f.Length == 0)
+                    {
+                        return default(T);
+                    }
                     return (T)bf.Deserialize(f);
                 }
             }

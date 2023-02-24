@@ -39,7 +39,7 @@ namespace RIT.RochesterLOS.Scenes
                     Debug.Log("Already in " + activeScene);
                     return;
                 }
-
+                EventManager.TriggerEvent(Events.Events.LoadScene, null);
                 SceneManager.LoadScene("Loading", LoadSceneMode.Additive);
                 var unloadOP = SceneManager.UnloadSceneAsync(activeScene);
                 unloadOP.completed += (AsyncOperation op) => StartCoroutine(LoadSceneAsync(str));
@@ -62,14 +62,16 @@ namespace RIT.RochesterLOS.Scenes
 
         private IEnumerator LoadSceneAsync(string sceneName)
         {
+            //yield return new WaitForSecondsRealtime(2f);
+            Debug.Log("Stating Load Screen");
             var loadOp = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
             loadOp.allowSceneActivation = false;
             yield return new WaitUntil(() => loadOp.isDone);
             EventManager.TriggerEvent(Events.Events.SceneActive, sceneName);
-            loadOp.allowSceneActivation = true;
+            //loadOp.allowSceneActivation = true;
             activeScene = sceneName;
             SceneManager.UnloadSceneAsync("Loading");
-
+            Debug.Log("Load Screen Done");
         }
     }
 }                                                                                                                                                                                                                                                                           

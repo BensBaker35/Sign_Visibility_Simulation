@@ -66,7 +66,7 @@ namespace RIT.RochesterLOS.Mapping
 
             arcGISMapComponent.View.Map = arcGISMap;
             
-            arcGISMap.Basemap.DoneLoading += (_) => {Debug.Log("Basemap Done"); ESRIEventManager.World_Imagery_Ready = true;};
+            arcGISMap.Basemap.DoneLoading += (_) => {Debug.Log("Basemap Done");};
 
             Analysis.AnalysisUtil.Initialize(arcGISMapComponent.WorldMatrix, arcGISMapComponent.View);
         }

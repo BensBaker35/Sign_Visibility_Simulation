@@ -18,9 +18,10 @@ namespace RIT.RochesterLOS.Signage.Serialization
 
         static SignSerializer()
         {
-            //RIT.RochesterLOS.Serialization.Serializer.Instance.RegisterSerializationTarget<string[]>("/Data/");
+            serialization = (ITextSerialization)ServiceLocator.GetService<ITextSerialization>();
             var config = (IConfigurationService)ServiceLocator.GetService<IConfigurationService>();
-            SignDataFileName = (string)config.GetConfigValue("active_sign_data");
+            var currentSaveDirectory = config.GetConfigValue("data_directory");
+            SignDataFileName = currentSaveDirectory + (string)config.GetConfigValue("active_sign_data");
         }
 
         internal static void Serialize(List<SignData> data)
@@ -33,8 +34,7 @@ namespace RIT.RochesterLOS.Signage.Serialization
                 lines.Add(line);
             }
 
-            serialization.SaveLines(SignDataFileName, lines);
-            //RIT.RochesterLOS.Serialization.Serializer.Instance.SaveObject<string[]>(lines.ToArray(), "SignPlaces");
+            serialization.SaveLines(SignDataFileName, lines);            
         }
 
         internal static async Task<SignData[]> Deserialize()
@@ -64,7 +64,7 @@ namespace RIT.RochesterLOS.Signage.Serialization
                     Debug.LogError($"Failed to parse: \n{e}\n{line}, {i}");
                 }
             }
-
+            Debug.Log($"Sign Serializer: Sings Count - {signs.Length}");
             return signs;
         }
     }

@@ -17,6 +17,10 @@ namespace RIT.RochesterLOS.Signage.Placement
         // Update is called once per frame
         void Update()
         {
+            if(cameraObject == null)
+            {
+                cameraObject = Camera.main.gameObject;
+            }
             //From: https://answers.unity.com/questions/589412/place-2d-image-in-3d-space-not-gui-not-3d-object.html
             transform.up = cameraObject.transform.position - transform.position;
             transform.forward = -cameraObject.transform.up;

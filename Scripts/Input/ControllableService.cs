@@ -62,16 +62,24 @@ namespace RIT.RochesterLOS.Control
 
         private IEnumerator WaitforMapLoad()
         {
-            Debug.Log("Waiting For Proper Collider Initialization");
-            yield return new WaitUntil(() => 
-            {
-                var hitCollider = Physics.Raycast(transform.position, Vector3.down, initialLoadDistanceCheck);
+            Debug.Log("CONTROLLABLE SERVICE: Waiting For Proper Collider Initialization");
+            yield return new WaitUntil(CheckGround);
 
-                return hitCollider;
-            });
+            Debug.Log($"CONTROLLABLE SERVICE: Colliders Found!");
+            EventManager.TriggerEvent(Events.Events.WorldReady, arcGISMapComponent, false);
             
-            EventManager.TriggerEvent(Events.Events.WorldReady, arcGISMapComponent);
-            Debug.Log("Colliders Found!");
+        }
+
+        private bool CheckGround()
+        {
+            RaycastHit hit;
+            var hitCollider = Physics.Raycast(transform.position, Vector3.down, out hit, initialLoadDistanceCheck);
+            if (hitCollider)
+            {
+                Debug.Log($"CONTROLLABLES SERVICE: hit collider - {hit.collider.name}", hit.collider.gameObject);
+            }
+
+            return hitCollider;
         }
 
         [ExecuteAlways]

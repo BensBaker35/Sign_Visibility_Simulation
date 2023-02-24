@@ -27,9 +27,10 @@ namespace RIT.RochesterLOS.UI.SaveDataExplorer
             var options = new List<OptionData>();
             foreach(var optionStr in serializer.GetDirectoryListings((string)currentSaveDirectory))
             {
-                options.Add(new(optionStr));
+                var fileDesc = optionStr.LastIndexOf('/');
+                var cleanStr = optionStr.Substring(fileDesc + 1);
+                options.Add(new(cleanStr));
             }
-
             fileSelect.AddOptions(options);
             fileSelect.onValueChanged.AddListener(OnFileSelectionChanged);
         }
@@ -51,7 +52,7 @@ namespace RIT.RochesterLOS.UI.SaveDataExplorer
                     {
                         config.UpdateValue("active_sign_data", selectedValue);
                     }
-                    
+                    selectionMade.Invoke();
                 break;
                 case MenuButtonAction.New:
                 //Create a new file with a name

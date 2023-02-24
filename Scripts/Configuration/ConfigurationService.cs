@@ -15,6 +15,7 @@ namespace RIT.RochesterLOS.Configuraion
             serialization = (IByteSerialization)ServiceLocator.GetService<IByteSerialization>();
             
             //serialization.SaveObject<Dictionary<string, object>>(filePath + "ConfigData");
+            
         }
 
         public object GetConfigValue(string valuePath)
@@ -23,8 +24,10 @@ namespace RIT.RochesterLOS.Configuraion
             object val;
             if(configData.TryGetValue(valuePath, out val))
             {
+                Debug.Log($"CONFIG: {valuePath}: {val}");
                 return val;
             }
+            Debug.LogWarning($"CONFIG: {valuePath} not found");
             return null;
         }
 
