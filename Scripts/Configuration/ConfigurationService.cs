@@ -7,20 +7,45 @@ namespace RIT.RochesterLOS.Configuraion
 {
     public class ConfigurationService : IConfigurationService
     {
-
-        public ConfigurationService(string filePath)
+        private const string filePath = "/Config/ConfigObject";
+        IByteSerialization serialization;
+        private Dictionary<string, object> configData;
+        public ConfigurationService()
         {
+            serialization = (IByteSerialization)ServiceLocator.GetService<IByteSerialization>();
             
+            //serialization.SaveObject<Dictionary<string, object>>(filePath + "ConfigData");
         }
 
         public object GetConfigValue(string valuePath)
         {
-            throw new System.NotImplementedException();
+            LazyCheck();
+            object val;
+            if(configData.TryGetValue(valuePath, out val))
+            {
+                return val;
+            }
+            return null;
         }
 
         public void UpdateValue(string valuePath, object value)
         {
-            throw new System.NotImplementedException();
+            LazyCheck();
+            if(!configData.TryAdd(valuePath, value))
+            {
+                Debug.Log("Updating Config Value: {valuePath} from {configData[valuePath]} to {value}");
+                configData[valuePath] = value;
+            }
+
+            serialization.SaveObject(filePath, configData);
+        }
+
+        private void LazyCheck()
+        {
+            if(configData == null)
+            {
+                configData = serialization.GetObject<Dictionary<string, object>>(filePath);
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d95210ef560430a40885304c5ea029d3, type: 3}
-  m_Name: LOS_Explorable
+  m_Name: Loading
   m_EditorClassIdentifier: 
   MenuRoots:
-  - {fileID: 4751558749401279071, guid: 79bd661c1edd2a645968e77bbcbfce89, type: 3}
+  - {fileID: 7227010870865377385, guid: dd3743e964e59b34b894b395dcb65d80, type: 3}

@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 using System.Linq;
 using RIT.RochesterLOS.UI;
 using System;
+using RIT.RochesterLOS.Services;
+using RIT.RochesterLOS.Serialization;
 
 namespace RIT.RochesterLOS.Scenes
 {
@@ -16,6 +18,15 @@ namespace RIT.RochesterLOS.Scenes
     {
         [SerializeField] private string parentUIScene = "GeneralUI";
         // Start is called before the first frame update
+
+        void Awake()
+        {
+            //Should also do work to set up other components
+            ServiceLocator.RegisterService<IByteSerialization>(new SerializationService());
+            ServiceLocator.RegisterService<ITextSerialization>(new FileSerializationService());
+            ServiceLocator.RegisterService<IUnityObjectSerializer>(new UnitySerializationService());
+            ServiceLocator.RegisterService<IConfigurationService>(new Configuraion.ConfigurationService());
+        }
         void Start()
         {
             try
@@ -28,51 +39,17 @@ namespace RIT.RochesterLOS.Scenes
                 var sceneTask = SceneManager.LoadSceneAsync(parentUIScene, LoadSceneMode.Additive);
                 sceneTask.completed += (_) => SetupUI();
             }
-            // finally
-            // {
-            //     SetupUI();
-            // }
-            // if (SceneManager.GetSceneByName(parentUIScene) == null) 
-            // {
-            //     SceneManager.LoadScene(parentUIScene, LoadSceneMode.Additive);
-            // } 
-
-
-
-
-
         }
 
         void SetupUI()
         {
             Debug.Log("Setting up UI");
-            var s = SceneManager.GetSceneByName(parentUIScene);
-            var ui = s.GetRootGameObjects();
-            foreach(var o in ui)
-            {
-//                Debug.Log(o.name);
-                var genUI = o.GetComponent<GeneralUIManager>();
-                if( genUI != null)
-                {
-                    genUI.Init();
-                }
-            }
-            //.FirstOrDefault(o => o.GetComponent<GeneralUIManager>() != null);
-            if(ui == null)
-            {
-                Debug.LogWarning("Can't find General UI Manager");
-            }
-            //ui?.GetComponent<GeneralUIManager>().Init();
+            ((IUIService)ServiceLocator.GetService<IUIService>()).Init();
+
         }
 
         // Update is called once per frame
         void Update()
-        {
-
-        }
-
-
-        private void PopulateSceneSerializers()
         {
 
         }

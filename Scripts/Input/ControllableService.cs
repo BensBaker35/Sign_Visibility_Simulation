@@ -12,7 +12,7 @@ namespace RIT.RochesterLOS.Control
         [SerializeField] private float lookSpeed = 150f;
         [SerializeField] private float moveSpeed = 25f;
         [SerializeField] private float initialLoadDistanceCheck = 3f;
-        [SerializeField] private CursorLockMode lockMode;
+        [SerializeField] private CursorLockMode lockMode = CursorLockMode.Confined;
 
         private bool mapReady = false;
         private ArcGISMapComponent arcGISMapComponent;

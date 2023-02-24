@@ -9,6 +9,7 @@ namespace RIT.RochesterLOS.UI
     {
 
         [SerializeField] private GameObject menuRoot;
+        protected bool isMain = false;
 
         public virtual GameObject GetMenuRoot()
         {
@@ -17,6 +18,7 @@ namespace RIT.RochesterLOS.UI
 
         public void SetRootActive()
         {
+
             GetMenuRoot().SetActive(true);
         }
 
@@ -30,6 +32,11 @@ namespace RIT.RochesterLOS.UI
             LoadSigns = 2,
             SaveSigns = 3,
             SwitchToPlacementView = 4,
+            Select,
+            New,
+            ExitToMenu,
+            Quit,
+            SwitchToEditView,
         }
     }
 }

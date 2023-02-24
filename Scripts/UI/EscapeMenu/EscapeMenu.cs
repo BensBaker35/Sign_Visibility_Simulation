@@ -9,8 +9,10 @@ namespace RIT.RochesterLOS.UI.EscapeMenu
     public class EscapeMenu : MenuLogic
     {
         [SerializeField] private GameObject fileExplorerPanel;
-        [SerializeField] private GameObject MapConfigPanel;
+        //[SerializeField] private GameObject MapConfigPanel;
+        [SerializeField] private GameObject MainPanel;
         private bool menuActive = false;
+        private SaveDataExplorer.SaveDataExplorer saveDataExplorer;
 
         private GameObject _activePanel;
         private GameObject ActivePanel
@@ -18,16 +20,25 @@ namespace RIT.RochesterLOS.UI.EscapeMenu
             get { return _activePanel; }
             set
             {
-                _activePanel?.SetActive(false);
+                if (_activePanel != null)
+                    _activePanel.SetActive(false);
+
                 _activePanel = value;
-                _activePanel.SetActive(true);
+
+                if (_activePanel != null)
+                    _activePanel.SetActive(true);
             }
         }
 
         void Start()
         {
             EventManager.Listen(Events.Events.EscapeMenuToggle, EscapeMenuToggle);
-            //DontDestroyOnLoad(this.gameObject);
+            saveDataExplorer = fileExplorerPanel.GetComponent<SaveDataExplorer.SaveDataExplorer>();
+            saveDataExplorer.selectionMade += () => ActivePanel = MainPanel;
+            fileExplorerPanel?.SetActive(false);
+            MainPanel?.SetActive(false);
+            //MapConfigPanel?.SetActive(false);
+            ActivePanel = null;
         }
 
         // Update is called once per frame
@@ -41,17 +52,9 @@ namespace RIT.RochesterLOS.UI.EscapeMenu
 
         private void EscapeMenuToggle(object _)
         {
-            // escapeMenuActive = !escapeMenuActive;
-            // if (escapeMenuActive)
-            // {
-            //     activeMenu = Instantiate(EscapeMenuUIPrefab, transform);
-            // }
-            // else
-            // {
-            //     Destroy(activeMenu);
-            // }
             menuActive = !menuActive;
-            this.GetMenuRoot().SetActive(menuActive);
+            //this.GetMenuRoot().SetActive(menuActive);
+            ActivePanel = menuActive ? MainPanel : null;
         }
 
         public void OnEscapeButtonClick()
@@ -64,15 +67,22 @@ namespace RIT.RochesterLOS.UI.EscapeMenu
             switch (desiredAction)
             {
                 case MenuButtonAction.SaveSigns:
-                    goto default;
-                    //EventManager.TriggerEvent(Events.Events.Save, null);
+                    ActivePanel = fileExplorerPanel;
                     break;
                 case MenuButtonAction.LoadSigns:
-                    goto default;
-                    //EventManager.TriggerEvent(Events.Events.Load, null);
+                    ActivePanel = fileExplorerPanel;
                     break;
                 case MenuButtonAction.SwitchToLOSView:
                     EventManager.TriggerEvent(Events.Events.ChangeScene, "LOS_Explorable");
+                    break;
+                case MenuButtonAction.SwitchToEditView:
+                    EventManager.TriggerEvent(Events.Events.ChangeScene, "SignPlacement");
+                    break;
+                case MenuButtonAction.Quit:
+                    Application.Quit(0);
+                    break;
+                case MenuButtonAction.ExitToMenu:
+                    EventManager.TriggerEvent(Events.Events.ChangeScene, "Start");
                     break;
                 case MenuButtonAction.OpenMapConfig:
                 default:

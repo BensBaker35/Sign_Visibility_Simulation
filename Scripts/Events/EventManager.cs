@@ -104,6 +104,10 @@ namespace RIT.RochesterLOS.Events
         ChangeScene,
         EscapeMenuToggle,
         SignsPlaced,
+        Save,
+        LoadScene,
+        SceneActive
+        
     }
 }
 

@@ -29,6 +29,7 @@ namespace RIT.RochesterLOS.Signage.Placement
             });
             signManager = GetComponent<SignManager>();
             //data = new();
+            Debug.Log("SignManager Awake");
         }
         // Start is called before the first frame update
         void Start()

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using RIT.RochesterLOS.Events;
+using RIT.RochesterLOS.Services;
 using UnityEngine;
 
 namespace RIT.RochesterLOS.Signage.Serialization
@@ -11,12 +12,15 @@ namespace RIT.RochesterLOS.Signage.Serialization
     public sealed class SignSerializer
     {
 
-        private static string SignDataFileLoc = "/Data/";
-        private static string SignDataFileName = "SignPlaces";
+        //private static string SignDataFileLoc = "/Data/";
+        private static string SignDataFileName = "SignPlaces.csv";
+        private static ITextSerialization serialization;
 
         static SignSerializer()
         {
-            RIT.RochesterLOS.Serialization.Serializer.Instance.RegisterSerializationTarget<string[]>("/Data/");
+            //RIT.RochesterLOS.Serialization.Serializer.Instance.RegisterSerializationTarget<string[]>("/Data/");
+            var config = (IConfigurationService)ServiceLocator.GetService<IConfigurationService>();
+            SignDataFileName = (string)config.GetConfigValue("active_sign_data");
         }
 
         internal static void Serialize(List<SignData> data)
@@ -29,13 +33,13 @@ namespace RIT.RochesterLOS.Signage.Serialization
                 lines.Add(line);
             }
 
-            
-            RIT.RochesterLOS.Serialization.Serializer.Instance.SaveObject<string[]>(lines.ToArray(), "SignPlaces");
+            serialization.SaveLines(SignDataFileName, lines);
+            //RIT.RochesterLOS.Serialization.Serializer.Instance.SaveObject<string[]>(lines.ToArray(), "SignPlaces");
         }
 
-        internal static SignData[] Deserialize()
+        internal static async Task<SignData[]> Deserialize()
         {
-            var data = RIT.RochesterLOS.Serialization.Serializer.Instance.GetObject<string[]>(SignDataFileName); //await File.ReadAllLinesAsync(SignDataFileLoc + SignDataFileName, System.Text.Encoding.UTF8);//
+            var data = await serialization.ReadLinesAsnyc(SignDataFileName);
 
             var signs = new SignData[data.Length - 1]; //Don't care about first row headers
             for (var i = 1; i < data.Length; i++)

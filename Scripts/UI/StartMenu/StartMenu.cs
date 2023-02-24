@@ -9,9 +9,12 @@ namespace RIT.RochesterLOS.UI.StartMenu
     public class StartMenu : MenuLogic
     {
         [SerializeField] private TMP_Dropdown configSelect;
-        // Start is called before the first frame update
+        
+        
         void Start()
         {
+            this.isMain = true;
+            
             if (configSelect != null)
             {
                 configSelect.onValueChanged.AddListener(OnConfigSelectChange);

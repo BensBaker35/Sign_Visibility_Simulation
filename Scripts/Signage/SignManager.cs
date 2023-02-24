@@ -39,9 +39,9 @@ namespace RIT.RochesterLOS.Signage
 
         }
 
-        private void Start()
+        private async Task StartAsync()
         {
-            var signDataArray = Serialization.SignSerializer.Deserialize();
+            var signDataArray = await Serialization.SignSerializer.Deserialize();
             signData = signDataArray.ToList();
             foreach (var sign in signData)
             {

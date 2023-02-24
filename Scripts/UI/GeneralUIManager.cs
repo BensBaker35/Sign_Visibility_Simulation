@@ -2,25 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using RIT.RochesterLOS.Events;
 using RIT.RochesterLOS.Serialization;
+using RIT.RochesterLOS.Services;
 using UnityEngine;
 
 namespace RIT.RochesterLOS.UI
 {
-    public class GeneralUIManager : MonoBehaviour
+    public class GeneralUIManager : MonoBehaviour, IUIService
     {
         //TODO Get from some scene config descriptor
         //[SerializeField] private GameObject EscapeMenuUIPrefab;
         [SerializeField] private List<GameObject> menusInScene;
+        private string SceneAssetsLoc = "SceneAssets/";
+        private IUnityObjectSerializer serializer;
 
         void Awake()
         {
-            Serializer.Instance.RegisterUnitySerializationTarget<UIInjector>("SceneAssets");
-            EventManager.Listen(Events.Events.ChangeScene, SceneChanged);
+            
+            ServiceLocator.RegisterService<IUIService>(this);
+            EventManager.Listen(Events.Events.SceneActive, SceneChanged);
+            EventManager.Listen(Events.Events.LoadScene, (_) => SceneChanged("Loading"));
+            
         }      
 
         public void Init()
         {
             Debug.Log("Init UI");
+            serializer = (IUnityObjectSerializer)ServiceLocator.GetService<IUnityObjectSerializer>();
             SceneChanged("Start");
         }  
 
@@ -30,7 +37,7 @@ namespace RIT.RochesterLOS.UI
             if(package is string)
             {
                 var str = (string)package;
-                var uiInjection = Serializer.Instance.GetUnityObject<UIInjector>(str);
+                var uiInjection = serializer.GetUnityObject<UIInjector>(SceneAssetsLoc + str);
                 if(uiInjection == null)
                 {
                     Debug.LogError($"Failed to find UI object for {str}");
@@ -50,12 +57,16 @@ namespace RIT.RochesterLOS.UI
             if(menusInScene == null)
             {
                 menusInScene = new();
+            } 
+            else 
+            {
+                menusInScene.Clear();
             }
             
             foreach(var menu in menus)
             {
                 GameObject menuItem = Instantiate(menu, this.transform);
-                menuItem.SetActive(false);
+                //menuItem.SetActive(false);
                 menusInScene.Add(menuItem);
             }
 
@@ -71,6 +82,11 @@ namespace RIT.RochesterLOS.UI
             }
             
 
+        }
+
+        public void TriggerEscapeMenu()
+        {
+            EventManager.TriggerEvent(Events.Events.EscapeMenuToggle, null);
         }
         
     }
