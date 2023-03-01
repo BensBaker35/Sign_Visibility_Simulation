@@ -9,19 +9,30 @@ using Esri.GameEngine.Geometry;
 using RIT.RochesterLOS.LOS;
 using System.Linq;
 using RIT.RochesterLOS.Events;
+using RIT.RochesterLOS.Services;
+using Unity.Mathematics;
 
 namespace RIT.RochesterLOS.Signage
 {
-    public class SignManager : MonoBehaviour
+    public class SignManager : MonoBehaviour, ISignService
     {
         private string signDataFileLocation = "Assets/Data/SignPlaces.csv";
         [SerializeField] List<SignTypeToObject> signTypeKVP;
         private Dictionary<SignType, GameObject> signTypeMap;
-        private List<SignData> signData;
+        private List<ArcGISLocationComponent> signDataLocations;
+        private Dictionary<int, SignData> signDataTable;
+        private Dictionary<SignData, GameObject> signDataGameObjectMap;
+        //private SignData currentlyEditing;
+        private SignType currentType = SignType.BASE;
+
+
+        public event ISignService.NewSignSelection OnNewSignSelection;
 
         private void Awake()
         {
-            EventManager.Listen(Events.Events.Save, (_) => Serialization.SignSerializer.Serialize(signData));
+            EventManager.Listen(Events.Events.SaveSignData, (_) => Serialization.SignSerializer.Serialize(signDataTable.Values.ToList()));
+            EventManager.Listen(Events.Events.LoadSignData, async (_) => await LoadSigns());
+            EventManager.Listen(Events.Events.SelectSignObject, (p) => currentType = (SignType)p);
 
             if (signTypeKVP.Count == 0)
             {
@@ -35,15 +46,24 @@ namespace RIT.RochesterLOS.Signage
                 signTypeMap.Add(mapping.TypeOfSign, mapping.SignPrefab);
             }
 
-
-
+            ServiceLocator.RegisterService<ISignService>(this);
+            signDataTable = new();
+            signDataGameObjectMap = new();
         }
 
         private async void Start()
         {
+            await LoadSigns();
+
+            EventManager.TriggerEvent(Events.Events.SignsPlaced, null);
+
+        }
+
+        private async Task LoadSigns()
+        {
             var signDataArray = await Serialization.SignSerializer.Deserialize();
-            signData = signDataArray.ToList();
-            foreach (var sign in signData)
+
+            foreach (var sign in signDataArray)
             {
                 var signPrefab = GetObjectForType(sign.Type);
                 var signObject = Instantiate(signPrefab, transform);
@@ -52,31 +72,94 @@ namespace RIT.RochesterLOS.Signage
                 signLocation.enabled = true;
                 signLocation.Rotation = new Esri.ArcGISMapsSDK.Utils.GeoCoord.ArcGISRotation(0, 90, 0);
                 signLocation.Position = new Esri.GameEngine.Geometry.ArcGISPoint(sign.Lon, sign.Lat, sign.Elev, ArcGISSpatialReference.WGS84());
-                
-                signObject.name = sign.Name;
+
+                signObject.name = sign.GetHashCode().ToString();
+
+                signDataTable.Add(sign.GetHashCode(), sign);
+                signDataGameObjectMap.Add(sign, signObject);
             }
-
-            EventManager.TriggerEvent(Events.Events.SignsPlaced, null);
-
         }
 
-        internal GameObject GetObjectForType(SignType sType)
-        {   
+        public GameObject GetObjectForType(SignType sType)
+        {
             GameObject toReturn;
-            if(signTypeMap.TryGetValue(sType, out toReturn))
+            if (signTypeMap.TryGetValue(sType, out toReturn))
             {
                 return toReturn;
             }
-            else 
+            else
             {
                 return signTypeMap[SignType.BASE];
             }
         }
-        
-        internal void AddNewSign(SignData data)
+
+        public GameObject[] GetSignPreFabs()
         {
-            Debug.Log(signData == null);
-            signData.Add(data);
+            return signTypeMap.Values.ToArray(); 
+        }
+
+        public void AddNewSign(ArcGISPoint point, string name)
+        {
+            var dataEntry = new SignData()
+            {
+                Lat = point.Y,
+                Lon = point.X,
+                Elev = point.Z,
+                Name = name,
+                Type = SignType.BASE,
+            };
+
+            signDataTable.Add(dataEntry.GetHashCode(), dataEntry);
+
+            var signGameObject = Instantiate(GetObjectForType(currentType), transform.position, Quaternion.identity, transform);
+            var signLoc = signGameObject.GetComponent<ArcGISLocationComponent>();
+            signLoc.enabled = true;
+            signLoc.Position = point;
+
+            //signGameObject.name = name;
+            signGameObject.name = dataEntry.GetHashCode().ToString();
+            Debug.Log($"Sign Manager: Creating Sign with ID {signGameObject.name}");
+            signDataGameObjectMap.Add(dataEntry, signGameObject);
+
+            OnNewSignSelection(dataEntry.GetHashCode());
+        }
+
+        public bool TrySelect(string tag)
+        {
+            int hashLookup;
+            var success = int.TryParse(tag, out hashLookup);
+            if( success && signDataTable.ContainsKey(hashLookup))
+            {
+                OnNewSignSelection(hashLookup);
+                return true;
+            }
+            return false;
+        }
+
+        public double3 GetPositionData(int id)
+        {
+            SignData sd;
+            if(signDataTable.TryGetValue(id, out sd))
+            {
+                return new double3(sd.Lon, sd.Lat, sd.Elev);
+            }
+
+            return default(double3);
+        }
+
+        public void UpdatePosition(int id, double3 data)
+        {
+            var signObject = signDataGameObjectMap[signDataTable[id]];
+
+            var newPos = new ArcGISPoint(data.x, data.y, data.z);
+            signObject.GetComponent<ArcGISLocationComponent>().Position = newPos;
+
+            if(currentType != signDataTable[id].Type)
+            {
+                var tmp = signDataTable[id];
+                tmp.Type = currentType;
+                signDataTable[id] = tmp;
+            }
         }
 
         /// <summary>
@@ -102,11 +185,6 @@ namespace RIT.RochesterLOS.Signage
     }
 #nullable disable
 
-    internal enum SignType
-    {
-        BASE,
-        HIGH_VIS,
 
-    }
 
 }

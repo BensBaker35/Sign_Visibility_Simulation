@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MenuRoots:
   - {fileID: 4751558749401279071, guid: f2f8e6998c290d8448aa06741368f5d3, type: 3}
+  - {fileID: 2350213800316757413, guid: 1fd9aa09475ca024d93bb2b4f5663030, type: 3}

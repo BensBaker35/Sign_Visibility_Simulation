@@ -29,7 +29,6 @@ namespace RIT.RochesterLOS.Signage
             triggerCollider = GetComponent<SphereCollider>();
             locationComponent = GetComponent<ArcGISLocationComponent>();
             actions = GetComponents<PlayerActivatedAction>();
-            
             triggerCollider.radius = maxDistance;
         }   
 

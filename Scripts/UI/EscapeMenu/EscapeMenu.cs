@@ -30,14 +30,15 @@ namespace RIT.RochesterLOS.UI.EscapeMenu
             }
         }
 
+        private DataAction currentAction = DataAction.None;
+
         void Start()
         {
             EventManager.Listen(Events.Events.EscapeMenuToggle, EscapeMenuToggle);
             saveDataExplorer = fileExplorerPanel.GetComponent<SaveDataExplorer.SaveDataExplorer>();
-            saveDataExplorer.selectionMade += () => ActivePanel = MainPanel;
+            saveDataExplorer.selectionMade += HandleSelection;
             fileExplorerPanel?.SetActive(false);
             MainPanel?.SetActive(false);
-            //MapConfigPanel?.SetActive(false);
             ActivePanel = null;
         }
 
@@ -53,7 +54,7 @@ namespace RIT.RochesterLOS.UI.EscapeMenu
         private void EscapeMenuToggle(object _)
         {
             menuActive = !menuActive;
-            //this.GetMenuRoot().SetActive(menuActive);
+            
             ActivePanel = menuActive ? MainPanel : null;
         }
 
@@ -67,9 +68,11 @@ namespace RIT.RochesterLOS.UI.EscapeMenu
             switch (desiredAction)
             {
                 case MenuButtonAction.SaveSigns:
+                    currentAction = DataAction.Save;
                     ActivePanel = fileExplorerPanel;
                     break;
                 case MenuButtonAction.LoadSigns:
+                    currentAction = DataAction.Load;
                     ActivePanel = fileExplorerPanel;
                     break;
                 case MenuButtonAction.SwitchToLOSView:
@@ -89,6 +92,30 @@ namespace RIT.RochesterLOS.UI.EscapeMenu
                     Debug.LogWarning($"Escape Menu action not supported {action}");
                     break;
             }
+        }
+
+        private void HandleSelection()
+        {
+            switch (currentAction)
+            {
+                case DataAction.Save:
+                    EventManager.TriggerEvent(Events.Events.SaveSignData, null);
+                    break;
+                case DataAction.Load:
+                    EventManager.TriggerEvent(Events.Events.LoadSignData, null);
+                    break;
+                default:
+                    break;
+            }
+            ActivePanel = MainPanel;
+            currentAction = DataAction.None;
+        }
+
+        private enum DataAction
+        {
+            None,
+            Save,
+            Load,
         }
 
     }

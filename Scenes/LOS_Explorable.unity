@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 1444.0391, g: 1512.5918, b: 2193.2969, a: 1}
+  m_IndirectSpecularColor: {r: 1444.0234, g: 1512.5566, b: 2193.2969, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -656,6 +656,9 @@ MonoBehaviour:
   signTypeKVP:
   - TypeOfSign: 0
     SignPrefab: {fileID: 7467164172105230599, guid: 907e24e21ab3f5c4eb57e053896ddc94,
+      type: 3}
+  - TypeOfSign: 2
+    SignPrefab: {fileID: 1959030373088092, guid: fe34ca65c4501884980cea62aeabd64c,
       type: 3}
 --- !u!1 &1895443621
 GameObject:

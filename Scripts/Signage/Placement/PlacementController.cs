@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Esri.GameEngine.Geometry;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
+using RIT.RochesterLOS.Services;
 
 namespace RIT.RochesterLOS.Signage.Placement
 {
@@ -16,7 +17,7 @@ namespace RIT.RochesterLOS.Signage.Placement
         [SerializeField] private double baseOffset = 5d;
 
         private ArcGISMapComponent arcGISMapComponent;
-        private SignManager signManager;
+        private ISignService signManager;
         //private List<Signage.SignData> data;
 
 
@@ -27,13 +28,14 @@ namespace RIT.RochesterLOS.Signage.Placement
                 arcGISMapComponent = (ArcGISMapComponent)p;
 
             });
-            signManager = GetComponent<SignManager>();
+            
             //data = new();
             Debug.Log($"SignManager Awake {signManager != null}");
         }
         // Start is called before the first frame update
         void Start()
         {
+            signManager = (ISignService)ServiceLocator.GetService<ISignService>();
         }
 
         // Update is called once per frame
@@ -49,27 +51,24 @@ namespace RIT.RochesterLOS.Signage.Placement
                 {
                     var geoPosition = Analysis.AnalysisUtil.SimPositionToGeo(hit.point, ArcGISSpatialReference.WGS84());
 
-
-                    var signPlacementObject = signManager.GetObjectForType(SignType.BASE);
-
-                    var newSign = Instantiate(signPlacementObject, hit.point, Quaternion.identity, transform);
-                    var newSignLocation = newSign.GetComponent<ArcGISLocationComponent>();
-                    newSignLocation.enabled = true;
-                    newSignLocation.Position = new ArcGISPoint(
-                        geoPosition.X, 
-                        geoPosition.Y, 
-                        geoPosition.Z + baseOffset, 
-                        geoPosition.SpatialReference
-                    );
-                    //Debug.Log($"SignManager: {signManager != null}, geoPosition: {geoPosition.Z != null}");
-                    signManager.AddNewSign(new SignData()
+                    if (!signManager.TrySelect(hit.collider.name))
                     {
-                        Lat = geoPosition.Y,
-                        Lon = geoPosition.X,
-                        Elev = geoPosition.Z,
-                        Name = "From Placement",
-                        Type = SignType.BASE,
-                    });
+                        //TODO possibly refactor into sign manager so it doesn't have to expose so much
+                        var signPlacementObject = signManager.GetObjectForType(SignType.BASE);
+
+                        
+
+                        geoPosition = new ArcGISPoint(
+                            geoPosition.X,
+                            geoPosition.Y,
+                            geoPosition.Z + baseOffset,
+                            geoPosition.SpatialReference
+                        );
+
+                        //Debug.Log($"SignManager: {signManager != null}, geoPosition: {geoPosition.Z != null}");
+                        signManager.AddNewSign(geoPosition, "From Placement");
+                    }
+
 
 
 

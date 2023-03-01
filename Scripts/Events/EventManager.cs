@@ -57,7 +57,7 @@ namespace RIT.RochesterLOS.Events
                 if (eventCache.ContainsKey(triggerEvent))
                 {
                     Debug.Log($"Object in Cache for {triggerEvent}");
-                    listener(eventCache[triggerEvent]);
+                    //listener(eventCache[triggerEvent]);
                 }
             }
 
@@ -105,9 +105,11 @@ namespace RIT.RochesterLOS.Events
         ChangeScene,
         EscapeMenuToggle,
         SignsPlaced,
-        Save,
+        SaveSignData,
         LoadScene,
-        SceneActive
+        SceneActive,
+        LoadSignData,
+        SelectSignObject,
         
     }
 }

@@ -60,6 +60,11 @@ namespace RIT.RochesterLOS.LOS
                 losRenderer.SetPositions(new []{rayCaster.position, player.transform.position});
                 
             }
+            else 
+            {
+                
+                losRenderer.SetPositions(new Vector3[0]);
+            }
         }
     }
 }
