@@ -27,6 +27,9 @@ namespace RIT.RochesterLOS.Control
             if(controlling == null)
             {
                 controlling = GetComponent<IControllable>();
+                if(controlling == null) {
+                    Debug.LogWarning("CONTROLLABLE SERVICE: Can't Find Controllable object");
+                }
             }
             arcGISMapComponent = FindObjectOfType<ArcGISMapComponent>();
             
@@ -45,7 +48,6 @@ namespace RIT.RochesterLOS.Control
             
             var mouseVec = new Vector3(mouseX, mouseY, 0);
             //var scrollVec = Input.mouseScrollDelta * Time.deltaTime;
-
             controlling.PushMouseInput(mouseVec, new Vector2(0, mouseScroll));
 
             var x = Input.GetAxis("Horizontal");

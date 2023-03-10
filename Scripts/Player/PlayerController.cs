@@ -19,8 +19,9 @@ namespace RIT.RochesterLOS.Player
 
         //[SerializeField] private GameObject cameraObject;
     
-        private Camera childCamera; //Main Camera
+        private Camera childCamera; //Main Camera needs to be first child in hierarchy
         private CharacterController characterController;
+        private Animator childAnimator;
         private float xRotation = 0f;
         private bool isGrounded = false;
         private Vector3 velocity;
@@ -39,6 +40,7 @@ namespace RIT.RochesterLOS.Player
             childCamera = GetComponentInChildren<Camera>();
             
             characterController = GetComponent<CharacterController>();
+            childAnimator = GetComponentInChildren<Animator>();
         }
 
         // Update is called once per frame
@@ -62,6 +64,8 @@ namespace RIT.RochesterLOS.Player
 
         public void PushKeyboardInput(Vector3 input)
         {
+            //Debug.Log($"PLAYER CONTROLLER: Input magnitude {input.magnitude}");
+            childAnimator.SetFloat("speed", input.normalized.magnitude);
             characterController.Move(input);
         }
 
