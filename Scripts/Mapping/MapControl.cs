@@ -11,6 +11,7 @@ using UnityEngine;
 using Esri.GameEngine;
 using Esri.GameEngine.Layers.Base;
 using RIT.RochesterLOS.Events;
+using UnityEngine.Rendering;
 
 namespace RIT.RochesterLOS.Mapping
 {
@@ -24,15 +25,18 @@ namespace RIT.RochesterLOS.Mapping
 
         public static readonly string MAIN_API_KEY = "AAPKd7b681581d6a439cb98d19ac0aefb8c0ZNzHfjFulf5_xRityexgJc_CHdbmCH7YFYyqSheV7vwp_isYxmEPO_4MumWoV8rE";
         [SerializeField] private ArcGISBasemapStyle style = ArcGISBasemapStyle.ArcGISImageryStandard;
-        private static  readonly ArcGISPoint ROCHESTER_COORDINATES = new(-77.6066334, 43.1566377, 176, ArcGISSpatialReference.WGS84()); // X, Y, Z, Spatial Reference
+        [SerializeField] private GameObject HDRPEnviorment;
+        [SerializeField] private GameObject URPEnviorment;
+        private static readonly ArcGISPoint ROCHESTER_COORDINATES = new(-77.6066334, 43.1566377, 176, ArcGISSpatialReference.WGS84()); // X, Y, Z, Spatial Reference
         private ArcGISMapComponent arcGISMapComponent;
         private ArcGISCameraComponent cameraComponent;
 
-    
+
 
         // Start is called before the first frame update
         void Start()
         {
+            SetUpForRenderPipeline();
             CreateArcGISMapComponent();
             //CreateArcGISCamera();
             CreateArcGISMap();
@@ -41,7 +45,7 @@ namespace RIT.RochesterLOS.Mapping
         // Update is called once per frame
         void Update()
         {
-         
+
         }
 
         /// <summary>
@@ -52,21 +56,21 @@ namespace RIT.RochesterLOS.Mapping
             Debug.Log("Creating Map");
 
             var arcGISMap = new Esri.GameEngine.Map.ArcGISMap(arcGISMapComponent.MapType);
-            
+
             arcGISMap.Basemap = new ArcGISBasemap(style, MAIN_API_KEY);
-            
+
 
             arcGISMap.Elevation = new Esri.GameEngine.Map.ArcGISMapElevation(new Esri.GameEngine.Elevation.ArcGISImageElevationSource(
                 "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer", "Elevation", MAIN_API_KEY));
 
             var buildingLayer = new ArcGIS3DObjectSceneLayer(
                 "https://tiles.arcgis.com/tiles/RQcpPaCpMAXzUI5g/arcgis/rest/services/InnerLoopParcel3D/SceneServer", MAIN_API_KEY);
-                
-            arcGISMap.Layers.Add(buildingLayer);    
+
+            arcGISMap.Layers.Add(buildingLayer);
 
             arcGISMapComponent.View.Map = arcGISMap;
-            
-            arcGISMap.Basemap.DoneLoading += (_) => {Debug.Log("Basemap Done");};
+
+            arcGISMap.Basemap.DoneLoading += (_) => { Debug.Log("Basemap Done"); };
 
             Analysis.AnalysisUtil.Initialize(arcGISMapComponent.WorldMatrix, arcGISMapComponent.View);
         }
@@ -87,9 +91,9 @@ namespace RIT.RochesterLOS.Mapping
             arcGISMapComponent.OriginPosition = ROCHESTER_COORDINATES;
             arcGISMapComponent.MapType = Esri.GameEngine.Map.ArcGISMapType.Local;
             arcGISMapComponent.MapTypeChanged += new ArcGISMapComponent.MapTypeChangedEventHandler(CreateArcGISMap);
-            
+
             arcGISMapComponent.MeshCollidersEnabled = true;
-            
+
         }
 
         /// <summary>
@@ -123,14 +127,23 @@ namespace RIT.RochesterLOS.Mapping
             }
         }
 
+        private void SetUpForRenderPipeline()
+        {
+            if(this.transform.childCount > 0)
+            {
+                return;
+            }
 
+            if (GraphicsSettings.renderPipelineAsset.name.Contains("HD"))
+            {
+                Instantiate(HDRPEnviorment, transform);            
+            } 
+            else 
+            {
+                Instantiate(URPEnviorment, transform);
+            }
 
-        // private DependantLayer FromViewState(ArcGISLayer layer)
-        // {
-        //     var state = arcGISMapComponent.View.GetViewState(layer);
-
-        //     //layer.
-        // }
+        }
 
 
     }
