@@ -35,7 +35,8 @@ namespace RIT.RochesterLOS.Serialization
         {
             try
             {
-                using (var f = File.OpenRead(dataPath + path))
+                
+                using (var f = File.Open(dataPath + path, FileMode.OpenOrCreate, FileAccess.Read))
                 {
                     if(f.Length == 0)
                     {
@@ -120,6 +121,7 @@ namespace RIT.RochesterLOS.Serialization
         public IEnumerable<string> ReadLines(string path)
         {
             SerializationHelper.CheckFile(Application.persistentDataPath + path);
+
             return File.ReadAllLines(dataPath + path);
         }
 
@@ -148,7 +150,7 @@ namespace RIT.RochesterLOS.Serialization
         {
             if(!Directory.Exists(path))
             {
-                Directory.CreateDirectory(path);
+                var d = Directory.CreateDirectory(path);
             }
         }
 
