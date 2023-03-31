@@ -97,11 +97,11 @@ namespace RIT.RochesterLOS.Serialization
 
     public class FileSerializationService : ITextSerialization
     {
-        private string dataPath = Application.persistentDataPath;
+        private string dataPath;
 
         public FileSerializationService()
         {
-
+            dataPath = Application.persistentDataPath;
         }
 
         public string[] GetDirectoryListings(string path)
@@ -119,17 +119,46 @@ namespace RIT.RochesterLOS.Serialization
 
         public IEnumerable<string> ReadLines(string path)
         {
+            SerializationHelper.CheckFile(Application.persistentDataPath + path);
             return File.ReadAllLines(dataPath + path);
         }
 
         public Task<string[]> ReadLinesAsnyc(string path)
         {
-            return File.ReadAllLinesAsync(dataPath + path, System.Text.Encoding.UTF8);
+            var dirSep = path.LastIndexOf('/');
+            var dirPath = path.Substring(0, dirSep);
+            SerializationHelper.CheckDirectory(Application.persistentDataPath + dirPath);
+            SerializationHelper.CheckFile(Application.persistentDataPath + path);
+            return File.ReadAllLinesAsync(Application.persistentDataPath + path, System.Text.Encoding.UTF8);
         }
 
         public void SaveLines(string path, IEnumerable<string> contents)
         {
             File.WriteAllLinesAsync(dataPath + path, contents, System.Text.Encoding.UTF8);
+        }
+    }
+    internal static class SerializationHelper 
+    {
+        static SerializationHelper()
+        {
+
+        }
+
+        public static void CheckDirectory(string path)
+        {
+            if(!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+        }
+
+        public static void CheckFile(string path)
+        {
+            if(!File.Exists(path))
+            {
+                var f = File.Create(path);
+                f.Close();
+            }
         }
     }
 }

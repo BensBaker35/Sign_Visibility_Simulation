@@ -8,7 +8,6 @@ namespace RIT.RochesterLOS.Events
     {
         public delegate void OnEventTrigger(object package);
         private Dictionary<Events, OnEventTrigger> listeners;
-        private Dictionary<Events, object> eventCache;
         private static EventManager instance;
         private static EventManager Instance
         {
@@ -29,7 +28,7 @@ namespace RIT.RochesterLOS.Events
         private EventManager()
         {
             listeners = new();
-            eventCache = new();
+            
         }
 
         public static void Listen(Events triggerEvent, OnEventTrigger listener)
@@ -53,22 +52,16 @@ namespace RIT.RochesterLOS.Events
                     thisEvent += listener;
                     listeners.Add(triggerEvent, thisEvent);
                 }
-
-                if (eventCache.ContainsKey(triggerEvent))
-                {
-                    Debug.Log($"Object in Cache for {triggerEvent}");
-                    //listener(eventCache[triggerEvent]);
-                }
             }
 
         }
 
-        public static void TriggerEvent(Events eventToTrigger, object package, bool allowCaching = true)
+        public static void TriggerEvent(Events eventToTrigger, object package)
         {
-            Instance.TriggerListeners(eventToTrigger, package, allowCaching);
+            Instance.TriggerListeners(eventToTrigger, package);
         }
 
-        private void TriggerListeners(Events eventToTrigger, object package, bool allowCaching = true)
+        private void TriggerListeners(Events eventToTrigger, object package)
         {
             lock (event_lock)
             {
@@ -76,25 +69,29 @@ namespace RIT.RochesterLOS.Events
                 if (listeners.TryGetValue(eventToTrigger, out thisEvent))
                 {
                     thisEvent?.Invoke(package);
-                    foreach(var d in thisEvent.GetInvocationList())
-                    {
-                        Debug.Log("Invoke on: " + d.Target.ToString());
-                    }
-                }
-                if(!allowCaching) return;
-
-                if (eventCache.ContainsKey(eventToTrigger))
-                {
-                    Debug.Log($"Updating Event cache: {eventToTrigger}, {package}");
-                    eventCache[eventToTrigger] = package;
-                }
-                else
-                {
-                    Debug.Log($"Adding Event to cache: {eventToTrigger}, {package}");
-                    eventCache.Add(eventToTrigger, package);
+                    // foreach(var d in thisEvent.GetInvocationList())
+                    // {
+                    //     Debug.Log("Invoke on: " + d.Target.ToString());
+                    // }
                 }
             }
 
+        }
+
+        public static void RemoveListener(Events ev, OnEventTrigger toRemove)
+        {
+            Instance.Remove(ev, toRemove);
+        }
+
+        private void Remove(Events ev, OnEventTrigger toRemove)
+        {
+            lock (event_lock)
+            {
+                if(listeners.ContainsKey(ev))
+                {
+                    listeners[ev] -= toRemove;
+                }
+            }
         }
     }
 

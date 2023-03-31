@@ -29,6 +29,7 @@ namespace RIT.RochesterLOS.Services
             if(!registeredServices.TryAdd(typeof(S), service))
             {   
                 Debug.LogWarning("Currently a registered service for: " + nameof(S));
+                registeredServices[typeof(S)] = service;
             }
         }
     }

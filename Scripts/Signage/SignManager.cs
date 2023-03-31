@@ -28,11 +28,16 @@ namespace RIT.RochesterLOS.Signage
 
         public event ISignService.NewSignSelection OnNewSignSelection;
 
+        private void SerializeHandler(object _) => Serialization.SignSerializer.Serialize(signDataTable.Values.ToList());
+        private async void LoadSignsHandler(object _) => await LoadSigns();
+        private void SelectSignObjectHandler(object p) => currentType = (SignType)p;
+
         private void Awake()
         {
-            EventManager.Listen(Events.Events.SaveSignData, (_) => Serialization.SignSerializer.Serialize(signDataTable.Values.ToList()));
-            EventManager.Listen(Events.Events.LoadSignData, async (_) => await LoadSigns());
-            EventManager.Listen(Events.Events.SelectSignObject, (p) => currentType = (SignType)p);
+            
+            EventManager.Listen(Events.Events.SaveSignData, SerializeHandler);
+            EventManager.Listen(Events.Events.LoadSignData, LoadSignsHandler);
+            EventManager.Listen(Events.Events.SelectSignObject, SelectSignObjectHandler);
 
             if (signTypeKVP.Count == 0)
             {
@@ -49,6 +54,13 @@ namespace RIT.RochesterLOS.Signage
             ServiceLocator.RegisterService<ISignService>(this);
             signDataTable = new();
             signDataGameObjectMap = new();
+        }
+
+        private void OnDisable()
+        {
+            EventManager.RemoveListener(Events.Events.SaveSignData, SerializeHandler);
+            EventManager.RemoveListener(Events.Events.LoadSignData, LoadSignsHandler);
+            EventManager.RemoveListener(Events.Events.SelectSignObject, SelectSignObjectHandler);
         }
 
         private async void Start()
@@ -106,7 +118,7 @@ namespace RIT.RochesterLOS.Signage
                 Lon = point.X,
                 Elev = point.Z,
                 Name = name,
-                Type = SignType.BASE,
+                Type = currentType,
             };
 
             signDataTable.Add(dataEntry.GetHashCode(), dataEntry);

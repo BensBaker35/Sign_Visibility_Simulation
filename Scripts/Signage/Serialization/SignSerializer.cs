@@ -22,34 +22,47 @@ namespace RIT.RochesterLOS.Signage.Serialization
             var config = (IConfigurationService)ServiceLocator.GetService<IConfigurationService>();
             var currentSaveDirectory = config.GetConfigValue("data_directory");
             SignDataFileName = currentSaveDirectory + (string)config.GetConfigValue("active_sign_data");
+            Debug.Log($"SIGN SERIALIZER: file - {SignDataFileName}");
         }
 
         internal static void Serialize(List<SignData> data)
         {
             //CheckInstance();
             var lines = new List<string>();
-            foreach(var sign in data)
+            foreach (var sign in data)
             {
                 var line = $"{sign.Lat}, {sign.Lon}, {sign.Elev}, {sign.Type}, {sign.Name}";
                 lines.Add(line);
             }
 
-            serialization.SaveLines(SignDataFileName, lines);            
+            serialization.SaveLines(SignDataFileName, lines);
         }
 
         internal static async Task<SignData[]> Deserialize()
         {
-            var data = await serialization.ReadLinesAsnyc(SignDataFileName);
+            string[] data;
+#if SIGN_SIM_DEMO
+            Debug.Log("Using fake data");
+            data = new string[]{
+                "43.1551264396326, -77.6055556830554, 162.943313598633, OBSTACLE,   From Placement",
+                "43.1572189561807, -77.6061114788337, 166.493301391602, OBSTACLE,  From Placement",
+                "43.1572197813584, -77.6060086719294, 166.234985351563, BASE, From Placement"
+            };
+            
+#else
+            data = await serialization.ReadLinesAsnyc(SignDataFileName);
+#endif
+            if(data == null || data.Length == 0) return new SignData[0];
 
-            var signs = new SignData[data.Length - 1]; //Don't care about first row headers
-            for (var i = 1; i < data.Length; i++)
+            var signs = new SignData[data.Length];
+            for (var i = 0; i < data.Length; i++)
             {
                 var line = data[i];
                 var values = line.Split(',');
 
                 try
                 {
-                    signs[i - 1] = new SignData()
+                    signs[i] = new SignData()
                     {
                         Lat = double.Parse(values[0]),
                         Lon = double.Parse(values[1]),

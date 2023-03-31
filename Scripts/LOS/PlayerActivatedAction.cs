@@ -10,7 +10,9 @@ namespace RIT.RochesterLOS.LOS
     {
      
         public delegate void Activate(Collider collider);
+        public delegate void Deactivate(Collider collider);
         public Activate PlayerInActivation;
+        public Deactivate PlayerLeftActivation;
         //public abstract void React(Collider collider);
         //public abstract Collider Notify();
     

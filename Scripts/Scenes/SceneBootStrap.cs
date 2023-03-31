@@ -45,7 +45,6 @@ namespace RIT.RochesterLOS.Scenes
         {
             Debug.Log("Setting up UI");
             ((IUIService)ServiceLocator.GetService<IUIService>()).Init();
-
         }
 
         // Update is called once per frame

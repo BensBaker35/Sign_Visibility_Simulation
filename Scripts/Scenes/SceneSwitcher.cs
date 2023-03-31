@@ -10,7 +10,7 @@ namespace RIT.RochesterLOS.Scenes
 {
     public class SceneSwitcher : MonoBehaviour
     {
-        private string activeScene = "Start";
+        private string activeScene; //= "Start";
         void Awake()
         {
             EventManager.Listen(Events.Events.ChangeScene, ChangeScene);
@@ -19,22 +19,26 @@ namespace RIT.RochesterLOS.Scenes
         // Start is called before the first frame update
         void Start()
         {
-
+#if SIGN_SIM_DEMO
+            activeScene = "Start_Demo";
+#else
+            activeScene = "Start";
+#endif
         }
 
         // Update is called once per frame
         void Update()
         {
-            
+
         }
 
         private void ChangeScene(object package)
         {
-            if(package is string)
+            if (package is string)
             {
                 var str = (string)package;
 
-                if (str.Equals(activeScene)) 
+                if (str.Equals(activeScene))
                 {
                     Debug.Log("Already in " + activeScene);
                     return;
@@ -49,7 +53,7 @@ namespace RIT.RochesterLOS.Scenes
                 //     activeScene = str;
                 // };
             }
-            else 
+            else
             {
                 Debug.LogError("Change Scene Event package is an unsupported type");
             }
@@ -74,4 +78,4 @@ namespace RIT.RochesterLOS.Scenes
             Debug.Log("Load Screen Done");
         }
     }
-}                                                                                                                                                                                                                                                                           
+}

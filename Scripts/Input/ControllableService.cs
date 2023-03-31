@@ -68,7 +68,7 @@ namespace RIT.RochesterLOS.Control
             yield return new WaitUntil(CheckGround);
 
             Debug.Log($"CONTROLLABLE SERVICE: Colliders Found!");
-            EventManager.TriggerEvent(Events.Events.WorldReady, arcGISMapComponent, false);
+            EventManager.TriggerEvent(Events.Events.WorldReady, arcGISMapComponent);
             
         }
 

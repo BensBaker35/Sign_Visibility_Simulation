@@ -20,17 +20,19 @@ namespace RIT.RochesterLOS.Signage.Placement
         private ISignService signManager;
         //private List<Signage.SignData> data;
 
+        private void WorldReadyHandler(object p) => arcGISMapComponent = (ArcGISMapComponent)p;
 
         private void Awake()
         {
-            EventManager.Listen(Events.Events.WorldReady, (p) =>
-            {
-                arcGISMapComponent = (ArcGISMapComponent)p;
-
-            });
+            EventManager.Listen(Events.Events.WorldReady, WorldReadyHandler);
             
             //data = new();
             Debug.Log($"SignManager Awake {signManager != null}");
+        }
+
+        private void OnDisable()
+        {
+            EventManager.RemoveListener(Events.Events.WorldReady, WorldReadyHandler);
         }
         // Start is called before the first frame update
         void Start()

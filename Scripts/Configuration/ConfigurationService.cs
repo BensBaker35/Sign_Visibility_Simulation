@@ -13,18 +13,16 @@ namespace RIT.RochesterLOS.Configuraion
         public ConfigurationService()
         {
             serialization = (IByteSerialization)ServiceLocator.GetService<IByteSerialization>();
-            
-            //serialization.SaveObject<Dictionary<string, object>>(filePath + "ConfigData");
-            
         }
 
         public object GetConfigValue(string valuePath)
         {
             LazyCheck();
             object val;
-            if(configData.TryGetValue(valuePath, out val))
+            Debug.Log(configData);
+            if (configData.TryGetValue(valuePath, out val))
             {
-                Debug.Log($"CONFIG: {valuePath}: {val}");
+                Debug.Log($"CONFIG: {valuePath} - {val}");
                 return val;
             }
             Debug.LogWarning($"CONFIG: {valuePath} not found");
@@ -34,9 +32,9 @@ namespace RIT.RochesterLOS.Configuraion
         public void UpdateValue(string valuePath, object value)
         {
             LazyCheck();
-            if(!configData.TryAdd(valuePath, value))
+            if (!configData.TryAdd(valuePath, value))
             {
-                Debug.Log("Updating Config Value: {valuePath} from {configData[valuePath]} to {value}");
+                Debug.Log($"Updating Config Value: {valuePath} from {configData[valuePath]} to {value}");
                 configData[valuePath] = value;
             }
 
@@ -45,9 +43,20 @@ namespace RIT.RochesterLOS.Configuraion
 
         private void LazyCheck()
         {
-            if(configData == null)
+            if (configData == null)
             {
+                Debug.Log($"CONFIG FILE Path: {filePath}");
                 configData = serialization.GetObject<Dictionary<string, object>>(filePath);
+            }
+
+            if (configData == null)
+            {
+                Debug.LogWarning("Config Data still null");
+                configData = new();
+                configData.Add("data_directory", "/Data/");
+                configData.Add("active_sign_data", "SignPlaces.csv");
+
+                serialization.SaveObject(filePath, configData);
             }
         }
     }

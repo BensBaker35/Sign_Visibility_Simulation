@@ -17,8 +17,9 @@ namespace RIT.RochesterLOS.LOS
         void Start()
         {
             losRenderer = GetComponent<LineRenderer>();
-            losRenderer.positionCount = 2; //Mus define position count before assignment
+            //losRenderer.positionCount = 2; //Mus define position count before assignment
             PlayerInActivation = TakeAction;
+            PlayerLeftActivation = DeactivateAction;
         }
 
         // Update is called once per frame
@@ -52,6 +53,8 @@ namespace RIT.RochesterLOS.LOS
             RaycastHit hit;
             if (Physics.Raycast(rayCaster.position, direction, out hit))
             {
+                losRenderer.positionCount = 2;
+                Debug.Log(hit.transform.name);
                 var hitPlayer = hit.transform.Equals(player.transform);
                 //Debug.Log(hitPlayer ? "Has LOS" : "Lost LOS");
                 losRenderer.endColor = losRenderer.startColor = hitPlayer ? Color.green : Color.red;
@@ -60,11 +63,11 @@ namespace RIT.RochesterLOS.LOS
                 losRenderer.SetPositions(new []{rayCaster.position, player.transform.position});
                 
             }
-            else 
-            {
-                
-                losRenderer.SetPositions(new Vector3[0]);
-            }
+        }
+
+        void DeactivateAction(Collider other)
+        {
+            losRenderer.positionCount = 0;
         }
     }
 }

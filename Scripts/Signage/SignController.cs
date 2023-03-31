@@ -14,7 +14,7 @@ namespace RIT.RochesterLOS.Signage
         private SphereCollider triggerCollider;
         private ArcGISLocationComponent locationComponent;
         private PlayerActivatedAction[] actions;
-        private float maxDistance = 15f; //TODO Provide some real world value
+        private float maxDistance = 30f; //TODO Provide some real world value
         void Awkae()
         {
             Debug.Log("Sign Awake");
@@ -30,7 +30,12 @@ namespace RIT.RochesterLOS.Signage
             locationComponent = GetComponent<ArcGISLocationComponent>();
             actions = GetComponents<PlayerActivatedAction>();
             triggerCollider.radius = maxDistance;
-        }   
+        }
+
+        void OnDisable()
+        {
+            EventManager.RemoveListener(Events.Events.WorldReady, SetOnGround);
+        }  
 
         // Update is called once per frame
         void Update()
@@ -45,6 +50,14 @@ namespace RIT.RochesterLOS.Signage
             {
                 a.PlayerInActivation(other);
             }
+        }
+
+        void OnTriggerExit(Collider other)
+        {
+            foreach(var a in actions)
+            {
+                a.PlayerLeftActivation(other);
+            }            
         }
 
         public void SetOnGround(object _)

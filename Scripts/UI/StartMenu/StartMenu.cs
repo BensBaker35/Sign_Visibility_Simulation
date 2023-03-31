@@ -47,6 +47,9 @@ namespace RIT.RochesterLOS.UI.StartMenu
                 case MenuButtonAction.SwitchToPlacementView:
                     EventManager.TriggerEvent(Events.Events.ChangeScene, "SignPlacement");
                     break;
+                case MenuButtonAction.Quit:
+                    Application.Quit(0);
+                    break;
                 default:
                     Debug.LogWarning($"Menu action not supported by Start Menu: {action}");
                     break;
